@@ -1,0 +1,44 @@
+<?php
+$form->prepare();
+$escapeHtml = $this->plugin('escapeHtml');
+$this->headLink()->appendStylesheet($this->assetUrl('css/export.css', 'MetadataEditor'));
+$this->headScript()->appendFile($this->assetUrl('js/export.js', 'MetadataEditor'));
+
+
+?>
+
+<?php echo $this->pageTitle($this->translate('Find and Replace'), 1, $this->translate('Find and Replace')); ?>
+
+<?php echo $this->form()->openTag($form); ?>
+
+<!-- <?php echo $this->formCollection($form, false); ?> -->
+<fieldset class="bmeFieldset">
+<h2>Step 1: Select Items</h2>
+<?php echo $this->formLabel($form->get('bmeCollectionId')); ?>
+<?php echo $this->formElement($form->get('bmeCollectionId')); ?>
+<?php echo $this->formLabel($form->get('itemSelectMeta')); ?>
+<?php echo $this->formElement($form->get('itemSelectMeta')); ?>
+
+<?php echo $this->formElement($form->get('rulebox')); ?>
+<?php echo $this->formElement($form->get('preview-items-button')); ?>
+<?php echo $this->formElement($form->get('hideItemPreview')); ?>
+<div id="itemPreviewDiv"></div>
+</fieldset>
+<fieldset class="bmeFieldset"> 
+<h2>Step 2: Select Properties</h2>
+<?php echo $this->formLabel($form->get('selectFields')); ?>
+<?php echo $this->formElement($form->get('selectFields')); ?>
+
+<?php echo $this->formElement($form->get('preview-fields-button')); ?>
+<?php echo $this->formElement($form->get('hide-field-preview')); ?>
+<div id="fieldPreviewDiv"></div>
+</fieldset>
+<fieldset class="bmeFieldset">
+<h2>Step 3: Define Changes</h2>
+<?php echo $this->formLabel($form->get('changesRadio')); ?>
+<?php echo $this->formElement($form->get('changesRadio')); ?>
+<?php echo $this->formElement($form->get('preview-changes-button')); ?>
+<?php echo $this->formElement($form->get('hide-changes-preview')); ?>
+<div id="changesPreviewDiv"></div>
+</fieldset>
+<?php echo $this->form()->closeTag($form); ?>
