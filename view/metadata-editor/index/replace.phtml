@@ -1,5 +1,41 @@
-<?php
+<?php $this->headScript()->appendFile($this->assetUrl('js/export.js', 'MetadataEditor')); ?>
+<?php echo $this->pageTitle($this->translate('Results'), 1, $this->translate('Metadata Editor')); ?>
 
-echo $collection;
+<h2>Updates</h2>
 
+<?php 
+//not really also indicators
+$collection = json_decode($collection, true);
+if($collection["count"] == '0'){
+	echo "<p>No items were selected or updated.</p>";
+}else{
+	echo "<p>Your items have been updated.</p>";
+	$properties= json_decode($properties, true);
+	$resultCount = sizeOf($collection);
+	echo "<p>Number of updated items: " . $resultCount . "</p>";
+	$out = "";
+	foreach ($collection as $item){
+		if ($resultCount > 0){
+			$title = $item["o:id"];
+			$out = $out . "<h3>Item No. " .  $title  . "</h3>";
+			$out = $out . "<table><tr><th>Property</th><th>Value</th></tr>";
+			foreach($properties as $property){
+				$colname = $property['o:term'];
+				$label = $property['o:label'];
+
+				if(array_key_exists($colname, $item)){
+					$itemProperties = $item[$colname];
+					$out = $out . "<tr><td>" . $label . "</td><td>";
+					foreach($itemProperties as $k => $itemProperty){
+						 $out = $out . $item[$colname][$k]['@value'] . "<br/>";
+					}
+	                $out = $out . "</td><tr/>";       	                          
+				}
+			$out = $out . "</table>";
+			}
+
+		}
+	}
+	echo $out;
+}
 ?>

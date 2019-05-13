@@ -2,12 +2,15 @@
 $form->prepare();
 $escapeHtml = $this->plugin('escapeHtml');
 $this->headLink()->appendStylesheet($this->assetUrl('css/export.css', 'MetadataEditor'));
+$this->headScript()->appendFile('https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js');
+// $this->headScript()->appendFile($this->assetUrl('js/csvimport.js', 'MetadataEditor'));
 $this->headScript()->appendFile($this->assetUrl('js/export.js', 'MetadataEditor'));
+
 
 
 ?>
 
-<?php echo $this->pageTitle($this->translate('Find and Replace'), 1, $this->translate('Find and Replace')); ?>
+<?php echo $this->pageTitle($this->translate('Edit Options'), 1, $this->translate('Metadata Editor')); ?>
 
 <?php echo $this->form()->openTag($form); ?>
 
@@ -16,29 +19,82 @@ $this->headScript()->appendFile($this->assetUrl('js/export.js', 'MetadataEditor'
 <h2>Step 1: Select Items</h2>
 <?php echo $this->formLabel($form->get('bmeCollectionId')); ?>
 <?php echo $this->formElement($form->get('bmeCollectionId')); ?>
-<?php echo $this->formLabel($form->get('itemSelectMeta')); ?>
-<?php echo $this->formElement($form->get('itemSelectMeta')); ?>
-
-<?php echo $this->formElement($form->get('rulebox')); ?>
+<?php echo $this->formLabel($form->get('item-select-meta')); ?>
+<?php echo $this->formElement($form->get('item-select-meta')); ?>
+<div id="item-meta" style="display:none">
+	<p>Only select items which also meet the criteria:</p>
+	 <?php echo $this->formLabel($form->get('bulk-metadata-editor-element-id')); ?> 
+	<?php echo $this->formElement($form->get('bulk-metadata-editor-element-id')); ?>
+	 <?php echo $this->formLabel($form->get('bulk-metadata-editor-compare')); ?> 
+	<?php echo $this->formElement($form->get('bulk-metadata-editor-compare')); ?>
+	 <?php echo $this->formLabel($form->get('bulk-metadata-editor-selector')); ?> 
+	<?php echo $this->formElement($form->get('bulk-metadata-editor-selector')); ?>
+<!-- 	<?php echo $this->formLabel($form->get('bulk-metadata-editor-case')); ?>-->
+<!--	<?php echo $this->formElement($form->get('bulk-metadata-editor-case')); ?> -->
+</div>
+<div class="previewButtonDiv">
 <?php echo $this->formElement($form->get('preview-items-button')); ?>
 <?php echo $this->formElement($form->get('hideItemPreview')); ?>
+</div>
+<p id="items-waiting">Requesting items. Please allow more time for large sets or multiple item sets.</p>
 <div id="itemPreviewDiv"></div>
 </fieldset>
 <fieldset class="bmeFieldset"> 
 <h2>Step 2: Select Properties</h2>
 <?php echo $this->formLabel($form->get('selectFields')); ?>
 <?php echo $this->formElement($form->get('selectFields')); ?>
-
+<div class="previewButtonDiv">
 <?php echo $this->formElement($form->get('preview-fields-button')); ?>
 <?php echo $this->formElement($form->get('hide-field-preview')); ?>
+</div>
+<p id="fields-waiting">Requesting items. Please allow more time if multiple properties were selected.</p>
 <div id="fieldPreviewDiv"></div>
 </fieldset>
 <fieldset class="bmeFieldset">
 <h2>Step 3: Define Changes</h2>
 <?php echo $this->formLabel($form->get('changesRadio')); ?>
 <?php echo $this->formElement($form->get('changesRadio')); ?>
+<div class="changesRadioOptions">
+	<div class="changesSearch">
+		<?php echo $this->formLabel($form->get('bulk-metadata-editor-search-field')); ?>
+		<?php echo $this->formElement($form->get('bulk-metadata-editor-search-field')); ?>
+		<?php echo $this->formLabel($form->get('bulk-metadata-editor-replace-field')); ?>
+		<?php echo $this->formElement($form->get('bulk-metadata-editor-replace-field')); ?>
+		<?php echo $this->formLabel($form->get('regexp-field')); ?>
+		<?php echo $this->formElement($form->get('regexp-field')); ?>
+	</div>
+	<div class="changesPrepend">
+		<?php echo $this->formLabel($form->get('bulk-metadata-editor-prepend-field')); ?>
+		<?php echo $this->formElement($form->get('bulk-metadata-editor-prepend-field')); ?>
+	</div>
+	<div class="changesAppend">
+		<?php echo $this->formLabel($form->get('bulk-metadata-editor-append-field')); ?>
+		<?php echo $this->formElement($form->get('bulk-metadata-editor-append-field')); ?>
+	</div>
+	<div class="changesExplode">
+		<?php echo $this->formLabel($form->get('bulk-metadata-editor-explode-field')); ?>
+		<?php echo $this->formElement($form->get('bulk-metadata-editor-explode-field')); ?>
+	</div>
+
+</div>
+<div class="previewButtonDiv">
 <?php echo $this->formElement($form->get('preview-changes-button')); ?>
 <?php echo $this->formElement($form->get('hide-changes-preview')); ?>
+</div>
+<p id="changes-waiting">Requesting items. Please allow more time if multiple properties  or item sets were selected.</p>
 <div id="changesPreviewDiv"></div>
 </fieldset>
+<fieldset class="bmeFieldset">
+<h2>Step 4: Download Metadata</h2>
+<p>Optional: Download metadata as CSV files. Since changes are not reversible, you may want a record of the metadata before and after edits are applied.</p>
+<button id="download-old" type="button"><?php echo $this->translate('Download Original Metadata'); ?></button>
+<button id="download-new"><?php echo $this->translate('Download Edited Metadata'); ?></button>
+</fieldset>
+<button id="showSubmit"><?php echo $this->translate('Apply Edits'); ?></button>
+<div class="submit">
+	<h3>Warning</h3>
+		<p>Changes are not reversible. Verify changes before applying edits.</p> 
+	<div class="validation"></div>
+	<button type="submit"><?php echo $this->translate('Proceed'); ?></button>
+</div>
 <?php echo $this->form()->closeTag($form); ?>

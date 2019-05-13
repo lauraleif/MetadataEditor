@@ -1,34 +1,26 @@
 jQuery(document).ready(function () {
     var $ = jQuery;
-    //var language = Omeka.BulkMetadataEditor.language;
     var url = document.URL.split('?')[0];
-    var baseUrl = url.substr(0, url.length - url.split('/').pop().length);
+    url = url.replace(/#$/, '');
 
     init();
 
     function init() {
-        $('#changesRadio-replace-field').after($('#bulk-metadata-editor-replace-field'));
-        $('#changesRadio-replace-field').after($('#regexp-field'));
-        $('#changesRadio-replace-field').after($('#bulk-metadata-editor-search-field'));
-        $('#changesRadio-add-field').after($('#bulk-metadata-editor-add-field'));
-        $('#changesRadio-prepend-field').after($('#bulk-metadata-editor-prepend-field'));
-        $('#changesRadio-append-field').after($('#bulk-metadata-editor-append-field'));
-        $('#changesRadio-explode-field').after($('#bulk-metadata-editor-explode-field'));
-        $('#changesRadio-deduplicate-field').after($('#bulk-metadata-editor-deduplicate-field'));
-        $('#changesRadio-deduplicate-files-field').after($('#bulk-metadata-editor-deduplicate-files-field'));
+        $('.changesSearch').hide();
+        $('.changesDedupe').hide();
+        $('.changesPrepend').hide();
+        $('.changesAppend').hide();
+        $('.changesExplode').hide();
+        $('#hide-items-button').hide();
+        $('#hide-field-preview').hide();
+        $('#hide-changes-preview').hide();
+        $('.submit').hide();
+        $('#items-waiting').hide();
+        $('#fields-waiting').hide();
+        $('#changes-waiting').hide();
 
-        $('#preview-items-button').wrap('<div class="previewButtonDiv"></div>');
-        $('#preview-fields-button').wrap('<div class="previewButtonDiv"></div>');
-        $('#preview-changes-button').wrap('<div class="previewButtonDiv"></div>');
 
-        $('#preview-items-button').after('<div class="bulk-metadata-editor-waiting" id="items-waiting">' + language.PleaseWait + '</div>');
-        $('#preview-fields-button').after('<div class="bulk-metadata-editor-waiting" id="fields-waiting">' + language.PleaseWait + '</div>');
-        $('#preview-changes-button').after('<div class="bulk-metadata-editor-waiting" id="changes-waiting">' + language.PleaseWait + '</div>');
-
-        $('#preview-items-button').after($('#hide-item-preview'));
-        $('#preview-fields-button').after($('#hide-field-preview'));
-        $('#preview-changes-button').after($('#hide-changes-preview'));
-
+        //When text is entered into item criteria
         $('.bulk-metadata-editor-selector').keypress(function (event) {
             var key = event.which;
             // the enter key code
@@ -37,166 +29,114 @@ jQuery(document).ready(function () {
             }
         });
 
-        $('#item-select-meta').change(function () {
+        //unhide if checked
+        $("#item-select-meta").change(function () {
             if (this.checked) {
-                $('#item-meta-selects').show();
+                $('#item-meta').show();
             } else {
-                $('#item-meta-selects').hide();
+                $('#item-meta').hide();
             }
         });
 
-        $('#add-rule').on('click', function (event) {
+        $('#select-itemset').change(function () {
+            $('.submit').hide();
+            $('#showSubmit').show();
+        });
+
+        $('#item-select-fields').change(function () {
+            $('.submit').hide();
+            $('#showSubmit').show();
+        
+        });
+
+        //show replace options if clicked
+        $('.changesDropdown').change(function () {
+            var selectedRadio = String($(this).val());
+            $('.submit').hide();
+            $('#showSubmit').show();
+            switch(selectedRadio){
+                case "replace":
+                    $('.changesSearch').show();
+                    $('.changesDedupe').hide();
+                    $('.changesPrepend').hide();
+                    $('.changesAppend').hide();
+                    $('.changesExplode').hide();
+                    break;
+                case "deduplicate":
+                    $('.changesSearch').hide();
+                    $('.changesDedupe').show();
+                    $('.changesPrepend').hide();
+                    $('.changesAppend').hide();
+                    $('.changesExplode').hide();
+                    break;
+                case "prepend":
+                    $('.changesSearch').hide();
+                    $('.changesDedupe').hide();
+                    $('.changesPrepend').show();
+                    $('.changesAppend').hide();
+                    $('.changesExplode').hide();
+                    break;
+                case "append":
+                    $('.changesSearch').hide();
+                    $('.changesDedupe').hide();
+                    $('.changesPrepend').hide();
+                    $('.changesAppend').show();
+                    $('.changesExplode').hide();
+                    break;
+                case "explode":
+                    $('.changesSearch').hide();
+                    $('.changesDedupe').hide();
+                    $('.changesPrepend').hide();
+                    $('.changesAppend').hide();
+                    $('.changesExplode').show();
+                    break;
+                default:
+                    alert("Please choose a single change type." + selectedRadio);
+            }
+
+        });
+
+        $('#download-old').click(function (event) {
             event.preventDefault();
-            var currentLast = $('.item-rule-box:last');
-            var newLast = currentLast.clone(true);
-            newLast.find('#bulk-metadata-editor-element-id').val('50');
-            newLast.find('#bulk-metadata-editor-compare').val('is exactly');
-            newLast.find('#bulk-metadata-editor-selector').val('');
-            newLast.find('#bulk-metadata-editor-case').attr('checked', false);
-            currentLast.parent().append(newLast);
+            $('#metadata-editor-form').attr("action", url + "/backup");  //change the form action
+            $('#metadata-editor-form').submit();
+        });
+        $('#download-new').click(function (event) {
+            event.preventDefault();
+            $('#metadata-editor-form').attr("action", url +"/download");  //change the form action
+            $('#metadata-editor-form').submit();
         });
 
-        $('#changesRadio-replace').change(function () {
-            if (this.checked) {
-                $('#bulk-metadata-editor-search-field').show(300);
-                $('#bulk-metadata-editor-replace-field').show(300);
-                $('#regexp-field').show(300);
-                $('#bulk-metadata-editor-add-field').hide(300);
-                $('#bulk-metadata-editor-prepend-field').hide(300);
-                $('#bulk-metadata-editor-append-field').hide(300);
-                $('#bulk-metadata-editor-explode-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-files-field').hide(300);
-            }
-        });
-
-        $('#changesRadio-add').change(function () {
-            if (this.checked) {
-                $('#bulk-metadata-editor-search-field').hide(300);
-                $('#bulk-metadata-editor-replace-field').hide(300);
-                $('#regexp-field').hide(300);
-                $('#bulk-metadata-editor-add-field').show(300);
-                $('#bulk-metadata-editor-prepend-field').hide(300);
-                $('#bulk-metadata-editor-append-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-files-field').hide(300);
-            }
-        });
-
-        $('#changesRadio-prepend').change(function () {
-            if (this.checked) {
-                $('#bulk-metadata-editor-search-field').hide(300);
-                $('#bulk-metadata-editor-replace-field').hide(300);
-                $('#regexp-field').hide(300);
-                $('#bulk-metadata-editor-add-field').hide(300);
-                $('#bulk-metadata-editor-prepend-field').show(300);
-                $('#bulk-metadata-editor-append-field').hide(300);
-                $('#bulk-metadata-editor-explode-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-files-field').hide(300);
-            }
-        });
-
-        $('#changesRadio-append').change(function () {
-            if (this.checked) {
-                $('#bulk-metadata-editor-search-field').hide(300);
-                $('#bulk-metadata-editor-replace-field').hide(300);
-                $('#regexp-field').hide(300);
-                $('#bulk-metadata-editor-add-field').hide(300);
-                $('#bulk-metadata-editor-prepend-field').hide(300);
-                $('#bulk-metadata-editor-append-field').show(300);
-                $('#bulk-metadata-editor-explode-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-files-field').hide(300);
-            }
-        });
-
-        $('#changesRadio-explode').change(function () {
-            if (this.checked) {
-                $('#bulk-metadata-editor-search-field').hide(300);
-                $('#bulk-metadata-editor-replace-field').hide(300);
-                $('#regexp-field').hide(300);
-                $('#bulk-metadata-editor-add-field').hide(300);
-                $('#bulk-metadata-editor-append-field').hide(300);
-                $('#bulk-metadata-editor-explode-field').show(300);
-                $('#bulk-metadata-editor-deduplicate-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-files-field').hide(300);
-            }
-        });
-
-        $('#changesRadio-deduplicate').change(function () {
-            if (this.checked) {
-                $('#bulk-metadata-editor-search-field').hide(300);
-                $('#bulk-metadata-editor-replace-field').hide(300);
-                $('#regexp-field').hide(300);
-                $('#bulk-metadata-editor-add-field').hide(300);
-                $('#bulk-metadata-editor-prepend-field').hide(300);
-                $('#bulk-metadata-editor-append-field').hide(300);
-                $('#bulk-metadata-editor-explode-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-field').show(300);
-                $('#bulk-metadata-editor-deduplicate-files-field').hide(300);
-            }
-        });
-
-        $('#changesRadio-deduplicate-files').change(function () {
-            if (this.checked) {
-                $('#bulk-metadata-editor-search-field').hide(300);
-                $('#bulk-metadata-editor-replace-field').hide(300);
-                $('#regexp-field').hide(300);
-                $('#bulk-metadata-editor-add-field').hide(300);
-                $('#bulk-metadata-editor-prepend-field').hide(300);
-                $('#bulk-metadata-editor-append-field').hide(300);
-                $('#bulk-metadata-editor-explode-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-files-field').show(300);
-            }
-        });
-
-        $('#changesRadio-delete').change(function () {
-            if (this.checked) {
-                $('#bulk-metadata-editor-search-field').hide(300);
-                $('#bulk-metadata-editor-replace-field').hide(300);
-                $('#regexp-field').hide(300);
-                $('#bulk-metadata-editor-prepend-field').hide(300);
-                $('#bulk-metadata-editor-append-field').hide(300);
-                $('#bulk-metadata-editor-explode-field').hide(300);
-                $('#bulk-metadata-editor-add-field').hide(300);
-                $('#bulk-metadata-editor-deduplicate-field').hide(300);
-            }
-        });
 
         $('#preview-items-button').click(function (event) {
-            var max = 15;
+            var max = 10;
+            $('#items-waiting').show();
             event.preventDefault();
             processItemRules();
             listItems(max);
-            $('#items-waiting').css('display', 'inline');
+
         });
 
         $('#preview-fields-button').click(function (event) {
-            var max = 7;
+            var max = 5;
+            $('#fields-waiting').show();
             event.preventDefault();
             processItemRules();
             listFields(max);
-            $('#fields-waiting').css('display', 'inline');
         });
 
         $('#preview-changes-button').click(function (event) {
-            var max = 20;
+            var max = 7;
+            $('#changes-waiting').show();
             event.preventDefault();
-            if ($('input[name=changesRadio]').is(':checked') === false) {
-                alert(language.SelectActionPerform);
-                return;
-            }
             processItemRules();
             listChanges(max);
-            $('#changes-waiting').css('display', 'inline');
         });
 
-        $('#hide-item-preview').click(function (event) {
+        $('#hide-items-button').click(function (event) {
             event.preventDefault();
             $('#itemPreviewDiv').html('<br />');
-            $('#hide-item-preview').hide();
+            $('#hide-items-button').hide();
         });
 
         $('#hide-field-preview').click(function (event) {
@@ -211,13 +151,23 @@ jQuery(document).ready(function () {
             $('#hide-changes-preview').hide();
         });
 
-        $('.removeRule').click(function () {
-            if ($('.item-rule-box').length > 1) {
-                $(this).closest('.item-rule-box').remove();
-            } else {
-                $('#item-select-meta').trigger('click');
-            }
+        $('#showSubmit').click(function (event) {
+            var max = 200;
+            event.preventDefault();
+            showSubmitButton(event);
         });
+
+         $('#showMoreItems').click(function (event) {
+            var max = 200;
+            event.preventDefault();
+            alert("clicked");
+            processItemRules();
+            listItems(max);
+        });
+
+
+        $('.submit').hide();
+        $('#showSubmit').show();
     };
 
     function processItemRules() {
@@ -244,8 +194,10 @@ jQuery(document).ready(function () {
         });
     }
 
+
     function showMoreItems(event) {
         var max = 200;
+        $('#items-waiting').show();
         event.preventDefault();
         processItemRules();
         listItems(max);
@@ -253,6 +205,7 @@ jQuery(document).ready(function () {
 
     function showMoreFields(event) {
         var max = 100;
+        $('#fields-waiting').show();
         event.preventDefault();
         processItemRules();
         listFields(max);
@@ -260,57 +213,79 @@ jQuery(document).ready(function () {
 
     function showMoreChanges(event) {
         var max = 200;
+        $('#changes-waiting').show();
         event.preventDefault();
         processItemRules();
         listChanges(max);
+
+    }
+
+    function showSubmitButton(event) {
+        event.preventDefault();
+        $('.submit').show();
+        var params =  $('#metadata-editor-form').serialize();
+        var output ="";
+        if(! params.includes('bmeCollectionId' )){
+            output = output + "No item set is selected. Please select items. <br/>";
+        }
+        if(! params.includes('selectFields' )){
+            output = output + "No field is selected. Please select a field. <br/>";
+        }
+        if(params.includes('changesRadio=&' )){
+            output = output + "No change is selected. Please select a change.<br/><br/>";
+        }
+        $('.validation').html(output + "Are you sure you want to continue?");
+        $('#showSubmit').hide();
     }
 
     function listItems(max) {
         $.ajax({
-            url: url + '/index/items/max/' + max,
+            url: url + '/preview',
+            type: "POST",
             dataType: 'json',
-            data: $('#bulk-metadata-editor-form').serialize(),
+            data: $('#metadata-editor-form').serialize(),
             timeout: 30000,
-            success: function (data) {
-                if (!data) {
-                    alert(language.CouldNotGeneratePreview);
-                } else {
-                    var r = new Array(), j = 0;
-
-                    r[j] = '<table><thead><tr><th scope="col">' + language.Title + '</th><th scope="col">' + language.Description + '</th><th scope="col">' + language.ItemType + '</th</tr></thead><tbody>';
-                    if (data['items'].length > 0) {
-                        for (var key = 0, size = data['items'].length; key < size; key++) {
-                            r[++j] = '<tr class="' + (key % 2 == 0 ? 'odd' : 'even') + '"><td>';
-                            r[++j] = '<a href="' + baseUrl + 'items/show/' + data['items'][key]['id'] + '">' + data['items'][key]['title'] + '</a>';
-                            r[++j] = '</td><td>';
-                            r[++j] = data['items'][key]['description'];
-                            r[++j] = '</td><td>';
-                            r[++j] = data['items'][key]['type'];
-                            r[++j] = '</td></tr>';
-                        }
-                        if (data['total'] > max) {
-                            var title = language.PlusItems.replace('%s', data['total'] - max);
-                            if (max < 200) {
-                                title += ' <a id="show-more-items" href="#">' + language.ShowMore + '</a>';
+            success: function(data){
+                if (!data || data['count'] == 0){
+                    alert("No items selected!");
+                }else{
+                    var out = '<table><tr><th>ID Number</th><th>Item Title</th><th>Description</th><th>Type</th></tr>';
+                    $.each(data, function(i, n){
+                        if (i <= max){
+                            var id = n['o:id'];
+                            if('dcterms:title' in n){
+                                var title = n['dcterms:title']['0']['@value'];
+                            }else{
+                                var title = "No title";
                             }
-                            r[++j] = '<tr class="even"><td colspan="3">' + title + '</td></tr>';
+                            if('dcterms:description' in n){
+                                var description = n['dcterms:description']['0']['@value'];
+                            }else{
+                                var description = "No description";
+                            }
+                            if('@type' in n){
+                                var type = n['@type'];
+                                type = type.replace('o:', '');
+                            }else{
+                                var type = "No type";
+                            }
+                            out = out + "<tr><td>" + id + "</td><td>" + title + "</td><td>" + description + "</td><td>" + type + "</td></tr>";
                         }
-                    } else {
-                        r[++j] = '<tr class="odd"><td colspan="3">' + language.NoItemFound + '</td></tr>';
-                    }
-                    r[++j] = '</tbody></table>';
+                    })
 
-                    $('#itemPreviewDiv').html(r.join(''));
+                    var more = data['count'] - max;
+                    var sentence = "";
+                    if (more > 0){
+                        sentence = "</table><p>Plus " + more + ' more items. <a href="#" id="show-more-items" onclick="showMoreItems();return false;">Show more</a></p>'; 
+                    }
+                    $('#itemPreviewDiv').html(sentence + out );
                     $('#show-more-items').click(showMoreItems);
-                    $('#hide-item-preview').show();
-                }
-            },
+                    $('#hide-items-button').show();
+                    }
+                },
+
             error: function (data, errorString, error) {
-                if (errorString == 'timeout') {
-                    alert(language.ItemsPreviewRequestTooLong);
-                } else {
-                    alert(language.ErrorGeneratingPreview + "\n" + data.responseJSON);
-                }
+                alert(errorString + " " + error);
             },
             complete: function (data, status) {
                 $('#items-waiting').hide();
@@ -319,56 +294,56 @@ jQuery(document).ready(function () {
     }
 
     function listFields(max) {
-        $.ajax({
-            url: url + '/index/fields/max/' + max,
+            $.ajax({
+            url: url + '/fields',
+            type: "POST",
             dataType: 'json',
-            data: $('#bulk-metadata-editor-form').serialize(),
+            data: $('#metadata-editor-form').serialize(),
             timeout: 30000,
-            success: function (data) {
-                if (!data) {
-                    alert(language.CouldNotGeneratePreview);
-                } else {
-                    var r = new Array(), j = 0;
+            success: function(data){
+                if (!data || data['count'] == 0){
+                    alert("No matches found! Try adjusting your terms.");
+                }else{
+                    var matchProperties = data['matchProperties'];
+                    var out = "";
 
-                    r[j] = '<table><tbody>';
-                    if (Object.keys(data['fields']).length > 0) {
-                        $.each(data['fields'], function (key, value) {
-                            var title = value['title'];
-                            delete value['title'];
-                            r[++j] = '<tr class="even"><td colspan="2">';
-                            r[++j] = '<a href="' + baseUrl + 'items/show/' + key + '">' + title + '</a>';
-                            r[++j] = '</td></tr>';
-                            $.each(value, function (keyInner, valueInner) {
-                                r[++j] = '<tr class="odd"><td>';
-                                r[++j] = valueInner['field'];
-                                r[++j] = '</td><td>';
-                                r[++j] = valueInner['value'];
-                                r[++j] = '</td></tr>';
-                            });
-                        });
-                        if (data['total'] > max) {
-                            var title = language.PlusFields.replace('%s', data['total']);
-                            if (max < 100) {
-                                title += ' <a id="show-more-fields" href="#">' + language.ShowMore + '</a>';
+                    $.each(data, function(i, n){
+                        if (i <= max){
+                            if('dcterms:title' in n){
+                                var title = n['dcterms:title']['0']['@value'];
+                            }else{
+                                var title = "Untitled";
                             }
-                            r[++j] = '<tr class="even"><td colspan="3">' + title + '</td></tr>';
-                        }
-                    } else {
-                        r[++j] = '<tr class="even"><td colspan="3">' + language.NoFieldFound + '</td></tr>';
-                    }
-                    r[++j] = '</tbody></table>';
+                            out = out + "<table><th colspan=\"2\">" + title + "</th>";
 
-                    $('#fieldPreviewDiv').html(r.join(''));
+                            $.each(matchProperties, function(j, property){
+                                    var term = property['o:term'];
+                                    var label = property['o:label'];
+                                    if(term in n){
+                                        itemProperties = n[term];
+                                        out = out + "<tr><td> " + label + "</td>" +  '<td>';
+                                        $.each(itemProperties, function(k, itemProperty){
+                                            out = out + n[term][k]['@value'] + "<br/>";
+                                        });
+                                        out = out + "</td>";
+                                    }
+                            });
+                            out = out + "</table>"
+                        }
+                    });
+                    var more = data['count'] - max;
+                    var sentence = "";
+                    if (more > 0){
+                        sentence = "<p>Plus " + more + ' more items. <a href="#" id="show-more-fields" onclick="showMoreFields();return false;">Show more</a></p>'; 
+                    }
+                    var alt = data['alt'];
+                    $('#fieldPreviewDiv').html(sentence + out);
                     $('#show-more-fields').click(showMoreFields);
                     $('#hide-field-preview').show();
                 }
             },
             error: function (data, errorString, error) {
-                if (errorString == 'timeout') {
-                    alert(language.FieldsPreviewRequestTooLong);
-                } else {
-                    alert(language.ErrorGeneratingPreview + "\n" + data.responseJSON);
-                }
+                alert(errorString + " " + error + " " + JSON.stringify(data));
             },
             complete: function (data, status) {
                 $('#fields-waiting').hide();
@@ -378,56 +353,111 @@ jQuery(document).ready(function () {
 
     function listChanges(max) {
         $.ajax({
-            url: url + '/index/changes/max/' + max,
+            url: url + '/changes',
+            type: "POST",
             dataType: 'json',
-            data: $('#bulk-metadata-editor-form').serialize(),
+            data: $('#metadata-editor-form').serialize(),
             timeout: 30000,
-            success: function (data) {
-                if (!data) {
-                    alert(language.CouldNotGeneratePreview);
-                } else {
-                    var r = new Array(), j = 0;
+            success: function(data){
+                if (!data || data['count'] == 0){
+                    alert("No matches found! Try adjusting your terms.");
+                }else{
+                    var matchProperties = data['matchProperties'];
+                    var out = "<table><tr><th>Item</th><th>Property</th><th>Old Value</th><th>New Value</th></tr>";
+                    var count = 0;
 
-                    r[j] = '<table><thead><tr><th scope="col">' + language.Item + '</th><th>' + language.Field + '</th><th>' + language.OldValue + '</th><th>' + language.NewValue + '</th</tr></thead><tbody>';
-                    if (data['changes'].length > 0) {
-                        for (var key = 0, size = data['changes'].length; key < size; key++) {
-                            r[++j] = '<tr class="' + (key % 2 == 0 ? 'odd' : 'even') + '"><td>';
-                            r[++j] = '<a href="' + baseUrl + 'items/show/' + data['changes'][key]['itemId'] + '">' + data['changes'][key]['item'] + '</a>';
-                            r[++j] = '</td><td>';
-                            r[++j] = data['changes'][key]['field'];
-                            r[++j] = '</td><td>';
-                            r[++j] = data['changes'][key]['old'];
-                            r[++j] = '</td><td>';
-                            r[++j] = data['changes'][key]['new'];
-                            r[++j] = '</td></tr>';
+                    $.each(data, function(i, item){
+                        if (i <= max){
+
+                            $.each(matchProperties, function(j, property){
+                                    var term = property['o:term'];
+                                    var label = property['o:label'];
+                                        if(term in item){
+                                            if('newItem' in item){
+                                                itemProperties = item[term];
+                                                newProperties = item['newItem'][term];
+                                                count = count + 1;
+                                                if(JSON.stringify(itemProperties) !== JSON.stringify(newProperties)){
+                                                    if('dcterms:title' in item){
+                                                        var title = item['dcterms:title']['0']['@value'];
+                                                    }else{
+                                                        var title = "Untitled";
+                                                    }
+                                                    out = out + "<tr><td>" + title + "</td>";
+                                                    out = out + "<td> " + label + "</td>" +  '<td>';
+                                                    $.each(itemProperties, function(k, itemProperty){
+                                                        out = out + item[term][k]['@value'] + "<br/>";
+                                                    });
+                                                     
+                                                    out = out + '</td>' + "<td>";
+                                                    
+                                                    $.each(newProperties, function(l, newProperty){
+                                                         out = out + newProperty['@value'] + "<br/>";
+                                                    });
+                                                    out = out + "</td>";
+                                                }
+                                            }
+                                        }
+                                        out = out + "</tr>";
+                                    // }
+                                    
+                            });
+                            
                         }
-                        if (data['total'] > max) {
-                            var title = language.PlusChanges.replace('%s', data['total']);
-                            if (max < 50) {
-                                title += ' <a id="show-more-changes" href="#">' + language.ShowMore + '</a>';
-                            }
-                            r[++j] = '<tr class="even"><td colspan="4">' + title + '</td></tr>';
-                        }
-                    } else {
-                        r[++j] = '<tr class="odd"><td colspan="4">' + language.NoChange + '</td></tr>';
+                    });
+                    var more = count - max;
+                    var sentence = "";
+                    if (more > 0){
+                        sentence = "</table><p>Plus " + more + ' more items. <a href="#" id="show-more-changes" onclick="showMoreChanges();return false;">Show more</a></p>'; 
                     }
-                    r[++j] = '</tbody></table>';
-
-                    $('#changesPreviewDiv').html(r.join(''));
+                    var alt = count;
+                    $('#changesPreviewDiv').html(sentence + out);
                     $('#show-more-changes').click(showMoreChanges);
                     $('#hide-changes-preview').show();
                 }
             },
+
             error: function (data, errorString, error) {
-                if (errorString == 'timeout') {
-                    alert(language.ChangesPreviewRequestTooLong);
-                } else {
-                    alert(language.ErrorGeneratingPreview + "\n" + data.responseJSON);
-                }
+                alert(errorString + " " + error);
             },
             complete: function (data, status) {
                 $('#changes-waiting').hide();
             }
         });
     }
+    function rebindInputs(sidebar) {
+              // Remove old chosen html and rebind event.
+              sidebar.find('.chosen-container').remove();
+              sidebar.find('.chosen-select').chosen(chosenOptions);
+              
+              // Rebind property selector.
+              $('.selector li.selector-parent').on('click', function(e) {
+                  e.stopPropagation();
+                  if ($(this).children('li')) {
+                      $(this).toggleClass('show');
+                  }
+              });
+      
+              $('.selector-filter').on('keydown', function(e) {
+                  if (e.keyCode == 13) {
+                      e.stopPropagation();
+                      e.preventDefault();
+                  }
+              });
+      
+              // Property selector, filter properties.
+              $('.selector-filter').on('keyup', (function() {
+                  var timer = 0;
+                  return function() {
+                      clearTimeout(timer);
+                      timer = setTimeout(Omeka.filterSelector.bind(this), 400);
+                  }
+              })())
+
+              // Specific sidebar actions for property selector.
+              $('#property-selector li.selector-child').on('click', function(e){
+                  e.stopPropagation();
+                  $(this).addClass('selected');
+              });
+         }
 });

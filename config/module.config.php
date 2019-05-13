@@ -44,6 +44,28 @@ return [
                                     ],
                                 ],
                             ],
+                            'fields' => [
+                                'type' => 'Literal',
+                                'options' => [
+                                    'route' => '/fields',
+                                    'defaults' => [
+                                        '__NAMESPACE__' => 'MetadataEditor\Controller',
+                                        'controller' => 'Index',
+                                        'action' => 'fields',
+                                    ],
+                                ],
+                            ],
+                            'changes' => [
+                                'type' => 'Literal',
+                                'options' => [
+                                    'route' => '/changes',
+                                    'defaults' => [
+                                        '__NAMESPACE__' => 'MetadataEditor\Controller',
+                                        'controller' => 'Index',
+                                        'action' => 'changes',
+                                    ],
+                                ],
+                            ],
                             'replace' => [
                                 'type' => 'Literal',
                                 'options' => [
@@ -52,6 +74,28 @@ return [
                                         '__NAMESPACE__' => 'MetadataEditor\Controller',
                                         'controller' => 'Index',
                                         'action' => 'replace',
+                                    ],
+                                ],
+                            ],
+                            'backup' => [
+                                'type' => 'Literal',
+                                'options' => [
+                                    'route' => '/backup',
+                                    'defaults' => [
+                                        '__NAMESPACE__' => 'MetadataEditor\Controller',
+                                        'controller' => 'Index',
+                                        'action' => 'backup',
+                                    ],
+                                ],
+                            ],
+                            'download' => [
+                                'type' => 'Literal',
+                                'options' => [
+                                    'route' => '/download',
+                                    'defaults' => [
+                                        '__NAMESPACE__' => 'MetadataEditor\Controller',
+                                        'controller' => 'Index',
+                                        'action' => 'download',
                                     ],
                                 ],
                             ],

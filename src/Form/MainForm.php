@@ -8,6 +8,7 @@ use Omeka\Form\Element\PropertySelect;
 use Zend\Form\Form;
 //use Zend\Form\Fieldset;
 use Zend\Form\Element\Text;
+use Zend\Form\Element\Checkbox;
 use Zend\InputFilter\Input;
 use Zend\InputFilter\InputFilter;
 use Zend\EventManager\Event;
@@ -26,6 +27,7 @@ class MainForm extends Form
     {
         $this->setAttribute('id', 'metadata-editor-form');
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', 'metadataeditor/replace');
         $this->_registerElements();
     }
 
@@ -36,41 +38,43 @@ class MainForm extends Form
      */
     private function _registerElements()
     {
-        //$selectItems = new Fieldset('selectItems');
-        $this->add([
-            'type' =>'hidden', 
-            'name' => 'callback', 
-            array('value' => '')
-        ]);
-
-        // $text = new MetadataEditor_Form_Element_Note('myformnote');
-        // $text->setValue("Testing text formnote");
-        // $this->add($text);
-
         $this->add([
                     'name' => 'bmeCollectionId',
                     'type' => ItemSetSelect::class,
                     'attributes' => [
                         'id' => 'select-itemset',
                         'class' => 'chosen-select',
-                        'multiple' => false,
-                        'data-placeholder' => 'Collection', 
+                        'multiple' => 'multiple',
+                        'data-placeholder' => 'Item set',
                         'value' => '0',// @translate
                     ],
                     'options' => [
-                        'label' => 'Select itemset', // @translate
+                        'label' => 'Select item set or sets.', // @translate
                         'resource_value_options' => [
                             'resource' => 'itemset',
                             'query' => [],
                         ],
                     ],
         ]);
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'item-select-meta',
+            'attributes' => [
+                'id' => 'item-select-meta',
+            ],
+            'options' => array(
+                'label' => 'Use properties to select items.',
+                'checked_value' => '1',
+                'unchecked_value' => '0',
+                'use_hidden_element' => true,
+            )
+        ));
 
         $this->add([
-                    'name' => 'itemSelectMeta',
+                    'name' => 'bulk-metadata-editor-element-id',
                     'type' => PropertySelect::class,
                     'attributes' => [
-                        'id' => 'item-select-meta',
+                        'id' => 'item-meta-selects',
                         'class' => 'chosen-select',
                         'multiple' => false,
                         'data-placeholder' => 'Collection', 
@@ -85,35 +89,62 @@ class MainForm extends Form
                     ],
         ]);
         $this->add([
-                    'name' => 'rulebox',
-                    'type' => 'text',
+                    'name' => 'bulk-metadata-editor-compare',
+                    'type' => 'select',
                     'attributes' => [
-                        'class' => 'field',
+                        'id' => 'bulk-metadata-editor-compare',
+                        'class' => 'chosen-select',
+                        'multiple' => false,
+                    ],
+                    'options' => [
+                        'label' => 'Operator', 
+                        'value_options' => [
+                            'eq' => 'Is Exactly',
+                            'neq' => 'Is Not Exactly',
+                            'in' => 'Contains',
+                            'nin' => 'Does Not Contain',
+                            'ex' => 'Has Any Value',
+                            'nex' => 'Has No Value',
+                        ],
                     ],
         ]);
-
-        //not actually a text element, but
-        //rendered with its own viewscript so it doesn't matter
-        // $this->add('text', 'rulebox', array(
-        //     'order' => 3,
-        //     'decorators' => array(
-        //         array(
-        //             'ViewScript',
-        //             array(
-        //                 'viewScript' => 'form-rule-box.php',
-        //                 'class' => 'field',
-        //             )
-        //         )
-        //     )
-        //));
-
+        $this->add([
+                    'name' => 'bulk-metadata-editor-selector',
+                    'type' => 'text',
+                    'attributes' => [
+                        'id' => 'bulk-metadata-editor-selector',
+                        'class' => 'chosen-select',
+                        'multiple' => false,
+                        'data-placeholder' => 'Selector', 
+                    ],
+                    'options' => [
+                        'label' => 'Search text', 
+                    ],
+        ]);
+        $this->add([
+                    'name' => 'bulk-metadata-editor-case',
+                    'type' => 'checkbox',
+                    'attributes' => [
+                        'id' => 'bulk-metadata-editor-case',
+                        'class' => 'chosen-select',
+                    ],
+                    'options' => [
+                        'label' => 'Match case?', 
+                        'checked_value' => '1',
+                        'unchecked_value' => '0',
+                        'use_hidden_element' => true,
+                    ],
+        ]);
         $this->add([
             'type' => 'Zend\Form\Element\Button',
             'id' => 'preview-items-button',
             'name' => 'preview-items-button',
             'class' => 'preview-button',
             'options' => [
-                'label' => 'Preview Selected Items',
+                'label' => 'Preview',
+            ],                    
+            'attributes' => [
+                'id' => 'preview-items-button',
             ],
         ]);
         $this->add([
@@ -122,256 +153,184 @@ class MainForm extends Form
             'name' => 'hideItemPreview',
             'class' => 'hideItemPreview',
             'options' => [
-                'label' => 'Hide Item Preview',
+                'label' => 'Hide Preview',
+            ],
+            'attributes' => [
+                'id' => 'hide-items-button',
             ],
         ]);
 
-
-        //not actually a text element, but
-        //rendered with its own viewscript so it doesn't matter
-        // $this->add('text', 'itemPreviewDiv', array(
-        //     'order' => 6,
-        //     'decorators' => array(array(
-        //         'ViewScript',
-        //         array(
-        //             'viewScript' => 'form-preview-div.php',
-        //             'class' => 'field',
-        //         )
-        //     ))
-        // ));
-        //$selectProperties = new Fieldset('selectProperties');
         $this->add([
                 'name' => 'selectFields',
                 'type' => PropertySelect::class,
                 'attributes' => [
-                    'id' => 'item-select-meta',
+                    'id' => 'item-select-fields',
                     'class' => 'chosen-select',
-                    'multiple' => true,
-                    'data-placeholder' => 'Select the metadata elements you would like to edit. You can select multiple values.', 
+                    'multiple' => 'true',
+                    'data-placeholder' => 'Property', 
                     'value' => '0',// @translate
                 ],
                 'options' => [
-                    'label' => 'Select Items by Metadata', // @translate
+                    'label' => 'Select the properties you would like to edit. You may select more than one.', // @translate
                     'resource_value_options' => [
                         'resource' => 'property',
                         'query' => [],
                     ],
                 ],
         ]);
-
         $this->add([
             'type' => 'Zend\Form\Element\Button',
             'name' => 'preview-fields-button',
-            'id' => 'preview-fields-button',
             'class' => 'preview-button',
             'options' => [
-                'label' => 'Preview Selected Items',
+                'label' => 'Preview',
+            ],
+            'attributes' => [
+                'id' => 'preview-fields-button',
             ],
         ]);
         $this->add([
             'type' => 'Zend\Form\Element\Button',
             'name' => 'hide-field-preview',
-            'id' => 'hide-field-preview',
             'class' => 'hideItemPreview',
             'options' => [
-                'label' => 'Hide Item Preview',
+                'label' => 'Hide Preview',
+            ],
+            'attributes' => [
+                'id' => 'hide-field-preview',
             ],
         ]);
 
-
-        //not actually a text element, but
-        //rendered with its own viewscript so it doesn't matter
-        // $this->add('text', 'fieldPreviewDiv', array(
-        //     'order' => 10,
-        //     'decorators' => array(array(
-        //         'ViewScript',
-        //         array(
-        //             'viewScript' => 'form-preview-div.php',
-        //             'class' => 'field',
-        //         )
-        //     ))
-        // ));
-
-
-        //$selectChanges = new Fieldset('selectChanges');
         $this->add([
                 'name' => 'changesRadio',
-                'type' => 'radio',
+                'type' => 'select',
                 'attributes' => [
-                    'id' => 'item-select-meta',
-                    'class' => 'chosen-select',
-                    'multiple' => true,
-                    'data-placeholder' => 'Select the metadata elements you would like to edit. You can select multiple values.', 
+                    'id' => 'changesRadio',
+                    'class' => 'changesDropdown',
+                    'multiple' => false,//for single only option
                     'value' => '0',// @translate
                 ],
                 'options' => [
-                    'label' => 'Select Items by Metadata', // @translate
+                    'label' => 'Type of Change', // @translate
+                    'empty_option' => 'Choose a change type',
                     'value_options' => [
                         'replace' => 'Search and replace text',
-                        'add' => 'Add a new metadatum in the selected field',
-                        'prepend' => 'Prepend text to existing metadata in the selected fields',
-                        'append' => 'Append text to existing metadata in the selected fields',
-                        'explode' => 'Explode metadata with a separator in multiple elements in the selected fields',
-                        'deduplicate' => 'Deduplicate and remove empty metadata in the selected fields',
-                        'deduplicate-files' => 'Deduplicate files of selected items by hash',
-                        'delete' => 'Delete all existing metadata in the selected fields',
+                        'prepend' => 'Prepend text to existing metadata in the selected properties',
+                        'append' => 'Append text to existing metadata in the selected properties',
+                        'explode' => 'Use delimiter to separate elements into multiple properties',
+                        'deduplicate' => 'Deduplicate & remove empty fields in the selected properties',
                     ],
                 ],
         ]);
-
+        $this->add([
+                    'name' => 'bulk-metadata-editor-search-field',
+                    'type' => 'text',
+                    'attributes' => [
+                        'id' => 'bulk-metadata-editor-search-field',
+                        'class' => 'chosen-select',
+                        'multiple' => false,
+                        'data-placeholder' => 'Search for', 
+                    ],
+                    'options' => [
+                        'label' => 'Original text: what you want to find and change', 
+                    ],
+        ]);
+        $this->add([
+                    'name' => 'bulk-metadata-editor-replace-field',
+                    'type' => 'text',
+                    'attributes' => [
+                        'id' => 'bulk-metadata-editor-replace-field',
+                        'class' => 'chosen-select',
+                        'multiple' => false,
+                        'data-placeholder' => 'Replace with', 
+                    ],
+                    'options' => [
+                        'label' => 'Replacement text: what you want to to replace the original text', 
+                    ],
+        ]); 
+        $this->add([//add checkbox info
+                    'name' => 'regexp-field',
+                    'type' => 'checkbox',
+                    'attributes' => [
+                        'id' => 'regexp-field',
+                        'class' => 'chosen-select',
+                        'multiple' => false,
+                        'data-placeholder' => 'Regular Expression', 
+                    ],
+                    'options' => [
+                        'label' => 'Use PHP regular expressions', 
+                    ],
+        ]); 
+        $this->add([
+                    'name' => 'bulk-metadata-editor-prepend-field',
+                    'type' => 'text',
+                    'attributes' => [
+                        'id' => 'bulk-metadata-editor-prepend-field',
+                        'class' => 'chosen-select',
+                        'multiple' => false,
+                        'data-placeholder' => 'Text to add in front of text', 
+                    ],
+                    'options' => [
+                        'label' => 'Text to add before property', 
+                    ],
+        ]);  
+        $this->add([
+                    'name' => 'bulk-metadata-editor-append-field',
+                    'type' => 'text',
+                    'attributes' => [
+                        'id' => 'bulk-metadata-editor-append-field',
+                        'class' => 'chosen-select',
+                        'multiple' => false,
+                        'data-placeholder' => 'Text to add after text', 
+                    ],
+                    'options' => [
+                        'label' => 'Text to add after after property', 
+                    ],
+        ]); 
+        $this->add([
+                    'name' => 'bulk-metadata-editor-explode-field',
+                    'type' => 'text',
+                    'attributes' => [
+                        'id' => 'bulk-metadata-editor-explode-field',
+                        'class' => 'chosen-select',
+                        'multiple' => false,
+                        'data-placeholder' => 'Delimiter (a character or phrase which separates fields)', 
+                    ],
+                    'options' => [
+                        'label' => 'Delimiter (separates fields)', 
+                    ],
+        ]); 
 
         $this->add([
             'type' => 'Zend\Form\Element\Button',
             'name' => 'preview-changes-button',
-            'id' => 'preview-changes-button',
             'class' => 'preview-button',
             'options' => [
-                'label' => 'Preview Selected Items',
+                'label' => 'Preview',
+            ],
+            'attributes' => [
+                'id' => 'preview-changes-button',
             ],
         ]);
         $this->add([
             'type' => 'Zend\Form\Element\Button',
             'name' => 'hide-changes-preview',
-            'id' => 'hide-changes-preview',
             'class' => 'hideItemPreview',
             'options' => [
-                'label' => 'Hide Item Preview',
+                'label' => 'Hide Preview',
+            ],
+            'attributes' => [
+                'id' => 'hide-changes-preview',
             ],
         ]);
-
-        //not actually a text element, but
-        //rendered with its own viewscript so it doesn't matter
-        // $this->add('text', 'changesPreviewDiv', array(
-        //     'order' => 14,
-        //     'decorators' => array(
-        //         array(
-        //             'ViewScript',
-        //             array(
-        //                 'viewScript' => 'form-preview-div.php',
-        //                 'class' => 'field',
-        //             )
-        //         )
-        //     )
-        // ));
-
-        // $this->add('checkbox', 'useBackgroundJob', array(
-        //     'label' => __('Background Job'),
-        //     'id' => 'use-background-job',
-        //     'description' => __('If checked, the job will be processed in the background.'),
-        //     'value' => '1',
-        //     'order' => 15,
-        // ));
-
-        //The following elements will be re-ordered in javascript
-        //gotta create a new element that can be hidden and shown and junk?
-
-        // $this->add('text', 'bmeSearch', array(
-        //     'label' => __('Search for:'),
-        //     'id' => 'bulk-metadata-editor-search',
-        //     'class' => 'elementHidden',
-        //     'description' => __('Input text you want to search for '),
-        // ));
-        // $this->add('text', 'bmeReplace', array(
-        //     'label' => __('Replace with:'),
-        //     'id' => 'bulk-metadata-editor-replace',
-        //     'class' => 'elementHidden',
-        //     'description' => __('Input text you want to replace with '),
-        // ));
-        // $this->add('checkbox', 'regexp', array(
-        //     'description' => __('Use regular expressions'),
-        //     'id' => 'regexp',
-        //     'class' => 'elementHidden',
-        //     'value' => 'true',
-        // ));
-        // $this->add('text', 'bmeAdd', array(
-        //     'label' => __('Text to Add'),
-        //     'id' => 'bulk-metadata-editor-add',
-        //     'class' => 'elementHidden',
-        //     'description' => __('Input text you want to add as metadata'),
-        // ));
-        // $this->add('text', 'bmePrepend', array(
-        //     'label' => __('Text to Prepend'),
-        //     'id' => 'bulk-metadata-editor-prepend',
-        //     'class' => 'elementHidden',
-        //     'description' => __('Input text you want to prepend to metadata'),
-        // ));
-        // $this->add('text', 'bmeAppend', array(
-        //     'label' => __('Text to Append'),
-        //     'id' => 'bulk-metadata-editor-append',
-        //     'class' => 'elementHidden',
-        //     'description' => __('Input text you want to append to metadata'),
-        // ));
-        // $this->add('text', 'bmeExplode', array(
-        //     'label' => __('Separator'),
-        //     'id' => 'bulk-metadata-editor-explode',
-        //     'class' => 'elementHidden',
-        //     'description' => __('The separator used to explode metadata (usually ",", ";" or "|", or any chain of characters).')
-        //         . ' ' . __('The html tags will be stripped before process.'),
-        // ));
-
-        // $this->addDisplayGroup(
-        //     array(
-        //         'bmeCollectionId',
-        //         'itemSelectMeta',
-        //         //'rulebox',
-        //         'previewItemsButton',
-        //         'hideItemPreview',
-        //         //'itemPreviewDiv',
-        //     ),
-        //     //'bmeItemsSet',
-        //     array(
-        //         'legend' => __('Step 1: Select Items'),
-        //         'class' => 'bmeFieldset',
-        // ));
-
-        // $this->addDisplayGroup(
-        //     array(
-        //         'selectFields[]',
-        //         'previewFieldsButton',
-        //         'hideFieldPreview',
-        //         'fieldPreviewDiv',
-        //     ),
-        //     'bmeFieldsSet',
-        //     array(
-        //         'legend' => __('Step 2: Select Fields'),
-        //         'class' => 'bmeFieldset',
-        // ));
-
-        // $this->addDisplayGroup(
-        //     array(
-        //         'changesRadio',
-        //         'previewChangesButton',
-        //         'bmePrepend',
-        //         'bmeAppend',
-        //         'bmeExplode',
-        //         'regexp',
-        //         'bmeAdd',
-        //         'bmeSearch',
-        //         'bmeReplace',
-        //         'hideChangesPreview',
-        //         'changesPreviewDiv',
-        //     ),
-        //     'bmeChangesSet',
-        //     array(
-        //         'legend' => __('Step 3: Define Changes'),
-        //         'description' => __('Define Edits to Apply'),
-        //         'class' => 'bmeFieldset',
-        // ));
-
-        // $this->addDisplayGroup(
-        //     array(
-        //         'useBackgroundJob',
-        //     ),
-        //     'bmeJob'
-        // );
-
-        // if(version_compare(OMEKA_VERSION, '2.2.1') >= 0)
-        //     $this->add('hash', 'bulk_editor_token');
-
-        //  $this->add($selectItems);
-        // $this->add($selectProperties);
-        // $this->add($selectChanges);
-
+        $this->add([
+            'type' => 'checkbox',
+            'id' => 'download',
+            'name' => 'download',
+            'options' => [
+                'label' => 'Download CSV files?',
+            ],
+        ]);
         $this->add([
             'type' => 'submit',
             'id' => 'performButton',
@@ -380,97 +339,6 @@ class MainForm extends Form
             ],
         ]);
 
-    // }
+
     }
-
-    // // /**
-    // //  * Overrides standard omeka form behavior to tweak display
-    // //  * and fix radio display eccentricity
-    // //  *
-    // //  * @return void
-    // //  */
-    // // public function applyOmekaStyles()
-    // // {
-    // //     foreach ($this->getElements() as $element) {
-
-    // //         if ($element instanceof Zend_Form_Element_Submit) {
-    // //             // All submit form elements should be wrapped in a div with
-    // //             // class "field".
-    // //             $element->setDecorators(array(
-    // //                 'ViewHelper',
-    // //                 array('HtmlTag', array('tag' => 'div'))
-    // //             )
-    // //             );
-
-    // //         } elseif ($element->getAttrib('class') == 'elementHidden') {
-    // //             $element->getDecorator('FieldTag')->setOption('class', 'field bmeHidden');
-    // //             $id = $element->getAttrib('id');
-
-    // //             $element->getDecorator('FieldTag')->setOption('id', $id . '-field');
-
-
-    // //         } elseif ($element instanceof Zend_Form_Element_Hidden
-    // //                 || $element instanceof Zend_Form_Element_Hash) {
-    // //             $element->setDecorators(array('ViewHelper'));
-    // //         }
-    // //     }
-    // // }
-
-    // // /**
-    // //  * Get an array to be used in 'select' elements containing all collections.
-    // //  *
-    // //  * @return array $collectionOptions Array of all collections and their
-    // //  * IDs, which will be used to populate a dropdown menu on the main view
-    // //  */
-    // // private function _getCollectionOptions()
-    // // {
-    // //     $options = get_table_options('Collection');
-    // //     unset($options['']);
-    // //     // Add the id of collections to simplify selection with similar names.
-    // //     array_walk($options, function (&$value, $key) {
-    // //         $value = '(#' . $key . ') ' . $value;
-    // //     });
-    // //     return array('0' => __('All Collections')) + $options;
-    // // }
-
-    // // /**
-    // //  * Get an array to be used in html select input containing all elements.
-    // //  *
-    // //  * @return array $elementOptions Array of options for a dropdown
-    // //  * menu containing all elements applicable to records of type Item
-    // //  */
-    // // private function _getElementOptions()
-    // // {
-    // //     /*
-    // //     $options = get_table_options('Element', null, array(
-    // //         'record_types' => array('Item', 'All'),
-    // //         'sort' => 'alphaBySet')
-    // //     );
-    // //     unset($options['']);
-    // //     return $options;
-    // //     */
-
-    // //     $db = get_db();
-    // //     $sql = "
-    // //     SELECT es.name AS element_set_name, e.id AS element_id,
-    // //     e.name AS element_name, it.name AS item_type_name
-    // //     FROM {$db->ElementSet} es
-    // //     JOIN {$db->Element} e ON es.id = e.element_set_id
-    // //     LEFT JOIN {$db->ItemTypesElements} ite ON e.id = ite.element_id
-    // //     LEFT JOIN {$db->ItemType} it ON ite.item_type_id = it.id
-    // //     WHERE es.record_type IS NULL OR es.record_type = 'Item'
-    // //     ORDER BY es.name, it.name, e.name";
-    // //     $elements = $db->fetchAll($sql);
-    // //     $options = array();
-    // //     //        $options = array('' => __('Select Below'));
-    // //     foreach ($elements as $element) {
-    // //         $optGroup = $element['item_type_name']
-    // //             ? __('Item Type') . ': ' . __($element['item_type_name'])
-    // //             : __($element['element_set_name']);
-    // //         $value = __($element['element_name']);
-
-    // //         $options[$optGroup][$element['element_id']] = $value;
-    // //     }
-    // //     return $options;
-    // // }
 }
