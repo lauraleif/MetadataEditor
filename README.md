@@ -1,7 +1,7 @@
-Export (module for Omeka S)
+Metadata Editor (module for Omeka S)
 ===============================
 
-Export is a module for Omeka S which exports item sets into CSV files. Each row in the file represents metadata for a single item.
+Metadata Editor is a module for Omeka S which allows bulk editing of item metadata. This module provides functionality similar to the Omeka Classic plugin Bulk Metadata Editor.
 
 
 Installation
@@ -15,6 +15,21 @@ Warning
 Use it at your own risk.
 
 It’s always recommended to backup your files and your databases and to check your archives regularly so you can roll back if needed.
+
+Notes
+---------------
+
+This module is adapted from the Omeka Classic plugin Bulk Metadata Editor but is not affiliated with that plugin. There are some differences in functionality, due to differences between Omeka S and Omeka Classic.
+
+The following metadata edits are supported:
+- Search and replace text (replace a search phrase with different text for all of the selected items)
+- Search and replace text with PHP regular expression (no replacement happens if the regular expression is invalid)
+- Prepend text to existing metadata in the selected properties 
+- Append text to existing metadata in the selected properties 
+- Use delimiter to separate elements into multiple properties
+- Deduplicate and remove empty fields in the selected properties
+
+Edits are only applied to the selected item sets and properties.
 
 Troubleshooting
 ---------------
