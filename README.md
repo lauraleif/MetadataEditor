@@ -62,5 +62,3 @@ Copyright
 [Omeka S]: https://omeka.org/s
 [Omeka forum]: https://forum.omeka.org/c/omeka-s/modules
 [GNU/GPL v3]: https://www.gnu.org/licenses/gpl-3.0.html
-
-

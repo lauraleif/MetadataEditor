@@ -251,7 +251,7 @@ jQuery(document).ready(function () {
                 }else{
                     var out = '<table><tr><th>ID Number</th><th>Item Title</th><th>Description</th><th>Type</th></tr>';
                     $.each(data, function(i, n){
-                        if (i <= max){
+                        if (i < max){
                             var id = n['o:id'];
                             if('dcterms:title' in n){
                                 var title = n['dcterms:title']['0']['@value'];
@@ -308,7 +308,7 @@ jQuery(document).ready(function () {
                     var out = "";
 
                     $.each(data, function(i, n){
-                        if (i <= max){
+                        if (i < max){
                             if('dcterms:title' in n){
                                 var title = n['dcterms:title']['0']['@value'];
                             }else{
@@ -367,7 +367,7 @@ jQuery(document).ready(function () {
                     var count = 0;
 
                     $.each(data, function(i, item){
-                        if (i <= max){
+                        if (i < max){
 
                             $.each(matchProperties, function(j, property){
                                     var term = property['o:term'];

@@ -286,13 +286,14 @@ class IndexController extends AbstractActionController
                                         $prepend = $out['bulk-metadata-editor-prepend-field'];
                                          $changedItem = $this->prepend($item, $term, $properties, $prepend);
                                     }elseif($change == "explode"){
-                                        $explode = $out['bulk-metadata-editor-explode-field'];
-                                        $changedItem = $this->explode($item, $term, $properties, $explode);
+                                        if(isset($out['bulk-metadata-editor-explode-field'])) {
+                                            $explode = $out['bulk-metadata-editor-explode-field'];
+                                            $changedItem = $this->explode($item, $term, $properties, $explode);
+                                        }
                                     }
                                     if( $changedItem !== $item){
                                         $item['newItem'] = $changedItem;
                                     }
-                                    
                                 }
                             }
                             array_push($results, $item);
@@ -343,14 +344,15 @@ class IndexController extends AbstractActionController
                 $change = $out['changesRadio'];
                 $search = $out['bulk-metadata-editor-search-field'];
                 $replace = $out['bulk-metadata-editor-replace-field'];
-                $regexp = $out['regexp-field'];
+                $out = $out['regexp-field'];
                 $prepend = $out['bulk-metadata-editor-prepend-field'];
                 $append = $out['bulk-metadata-editor-append-field'];
-                $explode = $out['bulk-metadata-editor-explode-field'];
+                
 
                 $results = array();
                 foreach($filteredItems as $item){
                     if(is_array($item)){
+                        $originalItem = $item;
                         if(array_key_exists('o:id', $item)){
                             $id = $item['o:id'];
                             foreach ($propertyInfo as $info){
@@ -367,16 +369,22 @@ class IndexController extends AbstractActionController
                                     }elseif($change == "prepend"){
                                          $item = $this->prepend($item, $term, $properties, $prepend);
                                     }elseif($change == "explode"){
-                                         $item = $this->explode($item, $term, $properties, $explode);
+                                        if(isset($out['bulk-metadata-editor-explode-field'])){
+                                            $explode = $out['bulk-metadata-editor-explode-field'];
+                                            $item = $this->explode($item, $term, $properties, $explode);
+                                        }
                                     }
                                 }
                             }
-                            $response = $this->api()->update('items', $id, $item);
-                            array_push($results, $item);
+                            if($originalItem !== $item){
+                                $response = $this->api()->update('items', $id, $item);
+                                array_push($results, $item);
+                            }
                         }
                     }
                 }
                 $view->setVariable('properties', json_encode($propertyInfo));
+                $results['count'] = sizeOf($results);
             }else{
                 $results = array("count"=>0, "error"=>"No changes selected.");
             }
@@ -387,32 +395,35 @@ class IndexController extends AbstractActionController
 
     protected function replace($item, $term, $properties, $search, $replace, $regexp){
         foreach($properties as $key=>$property){
-            $value = $property['@value'];
-            if($regexp == 1){
-                if(@preg_match($search, null) !== false){
-                    $newValue = preg_replace($search, $replace, $value);
+            if(array_key_exists('@value', $property)){
+                $value = $property['@value'];
+                if($regexp == 1){
+                    if(@preg_match($search, null) !== false){
+                        $newValue = preg_replace($search, $replace, $value);
+                    }else{
+                        $newValue = $value;
+                    }
                 }else{
-                    $newValue = $value;
+                    $newValue = str_replace($search, $replace, $value);
                 }
-            }else{
-                $newValue = str_replace($search, $replace, $value);
-            }
-            // if(($newValue !== $value) && ($newValue !== '')){
-            if(($newValue !== $value) && ($newValue !== '')){
-                $item[$term][$key]['@value'] =  $newValue;
-            }elseif($newValue == ''){
-                unset($item[$term][$key]);
+                if(($newValue !== $value) && ($newValue !== '')){
+                    $item[$term][$key]['@value'] =  $newValue;
+                }elseif($newValue == ''){
+                    unset($item[$term][$key]);
+                }
             }
         }
         return $item;
     }
 
     protected function append($item, $term, $properties, $append){
-        foreach($properties as $key=>$property){
-            $value = $property['@value'];
-            $newValue = $value . $append;
-            if(($newValue !== $value) && ($newValue !== '')){
-                $item[$term][$key]['@value'] =  $newValue;
+        foreach($properties as $key=>$property){ 
+            if(array_key_exists('@value', $property)){
+                $value = $property['@value'];
+                $newValue = $value . $append;
+                if(($newValue !== $value) && ($newValue !== '')){
+                    $item[$term][$key]['@value'] =  $newValue;
+                }
             }
         }
         return $item;
@@ -420,10 +431,12 @@ class IndexController extends AbstractActionController
 
     protected function prepend($item, $term, $properties, $prepend){
         foreach($properties as $key=>$property){
-            $value = $property['@value'];
-            $newValue = $prepend . $value ;
-            if(($newValue !== $value) && ($newValue !== '')){
-                $item[$term][$key]['@value'] =  $newValue;
+            if(array_key_exists('@value', $property)){
+                $value = $property['@value'];
+                $newValue = $prepend . $value ;
+                if(($newValue !== $value) && ($newValue !== '')){
+                    $item[$term][$key]['@value'] =  $newValue;
+                }
             }
         }
         return $item;
@@ -431,14 +444,23 @@ class IndexController extends AbstractActionController
     
     protected function explode($item, $term, $properties, $explode){
         foreach($properties as $key=>$property){
-            $value = $property['@value'];
-            $newValueSet = explode($explode, $value);
-            $blank = $property;
-            foreach($newValueSet as $i =>$newValue){
-                $blank['@value'] = $newValue;
-                array_push($item[$term], $blank);
+            if(array_key_exists('@value', $property)){
+                $value = $property['@value'];
+                if($explode !== ''){
+                    if(strpos($value, $explode) !== false){
+                        $newValueSet = explode($explode, $value);
+                        $blank = $property;
+                        foreach($newValueSet as $i =>$newValue){
+                            $blank['@value'] = $newValue;
+                            if($newValue !== ''){
+                                array_push($item[$term], $blank);
+                            }
+                        }
+                        unset($item[$term][$key]);
+                    }  
+                }
+                
             }
-            unset($item[$term][$key]);
         }
         return $item;
     }

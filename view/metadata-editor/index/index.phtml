@@ -16,7 +16,7 @@ $this->headScript()->appendFile($this->assetUrl('js/export.js', 'MetadataEditor'
 
 <!-- <?php echo $this->formCollection($form, false); ?> -->
 <fieldset class="bmeFieldset">
-<h2>Step 1: Select Items</h2>
+<legend>Step 1: Select Items</legend>
 <?php echo $this->formLabel($form->get('bmeCollectionId')); ?>
 <?php echo $this->formElement($form->get('bmeCollectionId')); ?>
 <?php echo $this->formLabel($form->get('item-select-meta')); ?>
@@ -40,7 +40,7 @@ $this->headScript()->appendFile($this->assetUrl('js/export.js', 'MetadataEditor'
 <div id="itemPreviewDiv"></div>
 </fieldset>
 <fieldset class="bmeFieldset"> 
-<h2>Step 2: Select Properties</h2>
+<legend>Step 2: Select Properties</legend>
 <?php echo $this->formLabel($form->get('selectFields')); ?>
 <?php echo $this->formElement($form->get('selectFields')); ?>
 <div class="previewButtonDiv">
@@ -51,7 +51,7 @@ $this->headScript()->appendFile($this->assetUrl('js/export.js', 'MetadataEditor'
 <div id="fieldPreviewDiv"></div>
 </fieldset>
 <fieldset class="bmeFieldset">
-<h2>Step 3: Define Changes</h2>
+<legend>Step 3: Define Changes</legend>
 <?php echo $this->formLabel($form->get('changesRadio')); ?>
 <?php echo $this->formElement($form->get('changesRadio')); ?>
 <div class="changesRadioOptions">
@@ -85,7 +85,7 @@ $this->headScript()->appendFile($this->assetUrl('js/export.js', 'MetadataEditor'
 <div id="changesPreviewDiv"></div>
 </fieldset>
 <fieldset class="bmeFieldset">
-<h2>Step 4: Download Metadata</h2>
+<legend>Step 4: Download Metadata</legend>
 <p>Optional: Download metadata as CSV files. Since changes are not reversible, you may want a record of the metadata before and after edits are applied.</p>
 <button id="download-old" type="button"><?php echo $this->translate('Download Original Metadata'); ?></button>
 <button id="download-new"><?php echo $this->translate('Download Edited Metadata'); ?></button>

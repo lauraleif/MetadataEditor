@@ -11,29 +11,29 @@ if($collection["count"] == '0'){
 }else{
 	echo "<p>Your items have been updated.</p>";
 	$properties= json_decode($properties, true);
-	$resultCount = sizeOf($collection);
-	echo "<p>Number of updated items: " . $resultCount . "</p>";
+	echo "<p>Number of updated items: " . $collection["count"] . "</p>";
 	$out = "";
 	foreach ($collection as $item){
-		if ($resultCount > 0){
-			$title = $item["o:id"];
-			$out = $out . "<h3>Item No. " .  $title  . "</h3>";
-			$out = $out . "<table><tr><th>Property</th><th>Value</th></tr>";
-			foreach($properties as $property){
-				$colname = $property['o:term'];
-				$label = $property['o:label'];
+		if(is_array($item)){
+			if ($resultCount > 0){
+				$title = $item["o:id"];
+				$out = $out . "<h3>Item No. " .  $title  . "</h3>";
+				$out = $out . "<table><tr><th>Property</th><th>Value</th></tr>";
+				foreach($properties as $property){
+					$colname = $property['o:term'];
+					$label = $property['o:label'];
 
-				if(array_key_exists($colname, $item)){
-					$itemProperties = $item[$colname];
-					$out = $out . "<tr><td>" . $label . "</td><td>";
-					foreach($itemProperties as $k => $itemProperty){
-						 $out = $out . $item[$colname][$k]['@value'] . "<br/>";
+					if(array_key_exists($colname, $item)){
+						$itemProperties = $item[$colname];
+						$out = $out . "<tr><td>" . $label . "</td><td>";
+						foreach($itemProperties as $k => $itemProperty){
+							 $out = $out . $item[$colname][$k]['@value'] . "<br/>";
+						}
+		                $out = $out . "</td><tr/>";       	                          
 					}
-	                $out = $out . "</td><tr/>";       	                          
+				$out = $out . "</table>";
 				}
-			$out = $out . "</table>";
 			}
-
 		}
 	}
 	echo $out;

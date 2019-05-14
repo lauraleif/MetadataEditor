@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: text/csv');
-header('Content-Disposition: attachment; filename="omeka_export.csv"');
+header('Content-Disposition: attachment; filename="omeka_original.csv"');
 $output = fopen('php://output', 'w');
 
 echo json_encode($collection);
@@ -30,6 +30,8 @@ if(is_string($collection)){
 										$multiRow = $multiRow .";" . $single['o:id'] ;
 									} elseif (array_key_exists('@value', $single)){
 										$multiRow = $multiRow . ";" .$single['@value'] ;
+									} elseif (array_key_exists('@id', $single)){
+										$multiRow = $multiRow . ";" .$single['@id'] ;
 									}
 								}
 								$multiRow = substr($multiRow, 1);
