@@ -46,10 +46,10 @@ class MainForm extends Form
                         'class' => 'chosen-select',
                         'multiple' => 'multiple',
                         'data-placeholder' => 'Item set',
-                        'value' => '0',// @translate
+                        'value' => '0',
                     ],
                     'options' => [
-                        'label' => 'Select item set or sets.', // @translate
+                        'label' => 'Select item set or sets.',
                         'resource_value_options' => [
                             'resource' => 'itemset',
                             'query' => [],
@@ -78,10 +78,10 @@ class MainForm extends Form
                         'class' => 'chosen-select',
                         'multiple' => false,
                         'data-placeholder' => 'Collection', 
-                        'value' => '0',// @translate
+                        'value' => '0',
                     ],
                     'options' => [
-                        'label' => 'Select Items by Metadata', // @translate
+                        'label' => 'Select Items by Metadata',
                         'resource_value_options' => [
                             'resource' => 'property',
                             'query' => [],
@@ -168,10 +168,10 @@ class MainForm extends Form
                     'class' => 'chosen-select',
                     'multiple' => 'true',
                     'data-placeholder' => 'Property', 
-                    'value' => '0',// @translate
+                    'value' => '0',
                 ],
                 'options' => [
-                    'label' => 'Select the properties you would like to edit. You may select more than one.', // @translate
+                    'label' => 'Select the properties you would like to edit. You may select more than one.',
                     'resource_value_options' => [
                         'resource' => 'property',
                         'query' => [],
@@ -208,10 +208,10 @@ class MainForm extends Form
                     'id' => 'changesRadio',
                     'class' => 'changesDropdown',
                     'multiple' => false,//for single only option
-                    'value' => '0',// @translate
+                    'value' => '0',
                 ],
                 'options' => [
-                    'label' => 'Type of Change', // @translate
+                    'label' => 'Type of Change',
                     'empty_option' => 'Choose a change type',
                     'value_options' => [
                         'replace' => 'Search and replace text',

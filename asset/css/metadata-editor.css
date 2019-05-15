@@ -1,0 +1,260 @@
+
+/*div#bulk_metadata_editor_compare_chosen{
+    width:10em;
+}*/
+h2{
+    font-size:1.5em;
+}
+div .changesRadioOptions div{
+    border-radius: 5px;
+    padding: 1em;
+    margin-top: 1em;
+    background: #fafafa;
+}
+.submit{
+    color: #A91919;
+    margin: 24px 0;
+    color: #A91919;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    padding: 2em;
+    border-radius:5px;
+}
+.submit button{
+    background-color: #A91919;
+    color: #fff;
+    box-shadow: none;
+    clear:both;
+}
+#showSubmit button{
+    display:block;
+}
+#item-meta label{
+    position: absolute !important;
+   top: -9999px !important;
+   left: -9999px !important;
+}
+
+.submit .validation{
+    font-weight:.8;
+}
+
+td{
+    vertical-align:top;
+    padding:0.5em;
+    text-align:left;
+}
+select#select-itemset, select#item-select-fields {
+    height: 10em;
+}
+table{
+    table-layout:auto;
+}
+
+tr:nth-child(even) {    background: #fafafa;}
+#fieldPreviewDiv table{
+    table-layout:fixed;
+    width:90%;
+}
+
+#fieldPreviewDiv tr:nth-child(even){
+    background-color: white;
+}
+#fieldPreviewDiv th:nth-child(1){
+    width:5%;
+}
+#fieldPreviewDiv th:nth-child(1){
+    width:95%;
+}
+#itemPreviewDiv, #fieldPreviewDiv, #changesPreviewDiv{
+    font-size:0.8em;
+}
+.preview-button {
+    margin:10px;
+}
+button{
+    margin-right:0.5em;
+    margin-top:1em;
+}
+input[type="checkbox"] {
+    width: 1em;
+    margin-top: 1.2em;
+}
+
+fieldset.bmeFieldset{
+    border: 1px solid gray;
+    padding:1em;
+    border-radius:5px;
+}
+#items-waiting, #fields-waiting, #changes-waiting{
+        background-color: #fff3cd;
+    border-color: #ffeeba;
+    padding: 2em;
+    border-radius: 5px
+}
+label{
+    display:block;
+    clear:left;
+    float:left;
+    text-align:right;
+    width:20%;
+    padding: 0.5em 1em 0.5em 1em;
+    vertical-align:top;
+
+}
+input, select, div#select_itemset_chosen{
+    display:block;
+    clear:right;
+    padding:0.5em, 0em;
+    margin:0.5em, 0em;
+    width:45%;
+    float:left;
+}
+ input[type="radio"]{
+    display:inline;
+    width:auto;
+ }
+ div#select_itemset_chosen {
+    width: 45%!important;
+}
+.previewButtonDiv{
+    display:block;
+    clear:left;
+}
+
+.hide-preview {
+    display:none;
+}
+
+.bmeHidden {
+    display:none;
+    margin:20px;
+}
+
+.inputs field {
+    display:block;
+    clear:left;
+}
+
+#bulk-metadata-editor-form legend {
+    padding: 0 10px;
+    position: relative;
+    top: 5px;
+}
+
+#performButton {    
+    font-size: 1.3em;
+    margin-left: 35px;
+    margin-top: 15px;
+}
+
+.bulk-metadata-editor-waiting {
+    display:none;
+}
+
+.removeRule {
+    color: #FF0000;
+    float: left;
+    margin-left: 10px;
+    padding-top: 5px;
+    vertical-align: middle;
+    cursor:pointer;
+}
+
+table tr.even{
+    font-weight: bold;
+}
+tr.active {
+    background-color: rgba(0,0,0, .08);
+}
+
+ul.options {
+    padding: unset;
+    width: 100%;
+    margin: 0;
+}
+
+ul.options li {
+    display: flex;
+}
+
+li {
+    list-style: none;
+}
+
+#select-item-set {
+    height: 100px;
+}
+
+input.value-language[type="text"] {
+    display: block;
+    margin: 3px;
+}
+
+.selector li.selected {
+    background-color: #0000000a;
+}
+div#item-meta {
+        background: #fafafa;
+    float: left;
+    padding: 1em;
+    margin-top: 3em;
+    width:80%;
+        margin-left: -1em;
+}
+div#item-meta-option{
+    width:20%!important;
+    display:inline;
+    overflow:hidden;
+    clear:none;
+
+}
+.chosen-search{
+    display:inline;
+}
+
+input#bulk-metadata-editor-selector{
+    display:inline;
+    clear:none;
+    width:15em;
+    float:none;
+    border-radius: 3px;
+    height: 2.4em;
+    vertical-align: middle;
+}
+a.chosen-single{
+    width:100%;
+}
+div#bulk_metadata_editor_compare_chosen{
+    clear:none;
+    width:20%!important;
+    padding:0.2em;
+}
+div#item_meta_selects_chosen{
+    clear:none;
+    width:37%!important;
+    padding:0.2em;
+}
+.changesSearch, .changesPrepend, .changesAppend, .changesExplode{
+    float: left;
+    margin-left: 12.4em;
+    width:80%;
+}
+div.changesRadioOptions input{
+    margin-top:0.5em;
+}
+div.changesRadioOptions input[type="checkbox"]{
+    margin-top:1em;
+}
+div.changesRadioOptions label{
+    width:30%;
+}
+div#download{
+    clear:both;
+}
+div#download input[type="checkbox"]{
+    margin-top: 0.9em;
+}
+div#download label{
+   width:auto;
+}

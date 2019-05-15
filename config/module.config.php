@@ -112,25 +112,6 @@ return [
                 'label' => 'Metadata Editor',
                 'route' => 'admin/metadataeditor',
                 'resource' => 'MetadataEditor\Controller\Index',
-                'pages' => [
-                    [
-                        'label' => 'Find', // @translate
-                        'route' => 'admin/metadataeditor',
-                        'resource' => 'MetadataEditor\Controller\Index',
-                    ],
-                    [
-                        'label' => 'Preview', // @translate
-                        'route' => 'admin/metadataeditor/preview',
-                        'resource' => 'MetadataEditor\Controller\Index',
-                        'visible' => false,
-                    ],
-                                        [
-                        'label' => 'Replace', // @translate
-                        'route' => 'admin/metadataeditor/replace',
-                        'resource' => 'MetadataEditor\Controller\Index',
-                        'visible' => false,
-                    ],
-                ],
             ],
         ],
     ],
