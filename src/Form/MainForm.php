@@ -1,27 +1,18 @@
 <?php
 namespace MetadataEditor\Form;
 
-use Omeka\Settings\UserSettings;
 use Omeka\Form\Element\ItemSetSelect;
 use Omeka\Form\Element\PropertySelect;
 //use MetadataEditor\Form\Element\MetadataEditor_Form_Element_Note;
 use Zend\Form\Form;
 //use Zend\Form\Fieldset;
-use Zend\Form\Element\Text;
 use Zend\Form\Element\Checkbox;
-use Zend\InputFilter\Input;
-use Zend\InputFilter\InputFilter;
-use Zend\EventManager\Event;
-use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Form\Element;
 
 class MainForm extends Form
 {
-
     /**
      * Initialize the form.
-     *
-     * @return void
      */
     public function init()
     {
@@ -33,8 +24,6 @@ class MainForm extends Form
 
     /**
      * Populate the form
-     *
-     * @return void
      */
     private function _registerElements()
     {
@@ -56,19 +45,19 @@ class MainForm extends Form
                         ],
                     ],
         ]);
-        $this->add(array(
+        $this->add([
             'type' => 'Zend\Form\Element\Checkbox',
             'name' => 'item-select-meta',
             'attributes' => [
                 'id' => 'item-select-meta',
             ],
-            'options' => array(
+            'options' => [
                 'label' => 'Use properties to select items.',
                 'checked_value' => '1',
                 'unchecked_value' => '0',
                 'use_hidden_element' => true,
-            )
-        ));
+            ],
+        ]);
 
         $this->add([
                     'name' => 'bulk-metadata-editor-element-id',
@@ -77,7 +66,7 @@ class MainForm extends Form
                         'id' => 'item-meta-selects',
                         'class' => 'chosen-select',
                         'multiple' => false,
-                        'data-placeholder' => 'Collection', 
+                        'data-placeholder' => 'Collection',
                         'value' => '0',
                     ],
                     'options' => [
@@ -97,7 +86,7 @@ class MainForm extends Form
                         'multiple' => false,
                     ],
                     'options' => [
-                        'label' => 'Operator', 
+                        'label' => 'Operator',
                         'value_options' => [
                             'eq' => 'Is Exactly',
                             'neq' => 'Is Not Exactly',
@@ -115,10 +104,10 @@ class MainForm extends Form
                         'id' => 'bulk-metadata-editor-selector',
                         'class' => 'chosen-select',
                         'multiple' => false,
-                        'data-placeholder' => 'Selector', 
+                        'data-placeholder' => 'Selector',
                     ],
                     'options' => [
-                        'label' => 'Search text', 
+                        'label' => 'Search text',
                     ],
         ]);
         $this->add([
@@ -129,7 +118,7 @@ class MainForm extends Form
                         'class' => 'chosen-select',
                     ],
                     'options' => [
-                        'label' => 'Match case?', 
+                        'label' => 'Match case?',
                         'checked_value' => '1',
                         'unchecked_value' => '0',
                         'use_hidden_element' => true,
@@ -142,7 +131,7 @@ class MainForm extends Form
             'class' => 'preview-button',
             'options' => [
                 'label' => 'Preview',
-            ],                    
+            ],
             'attributes' => [
                 'id' => 'preview-items-button',
             ],
@@ -167,7 +156,7 @@ class MainForm extends Form
                     'id' => 'item-select-fields',
                     'class' => 'chosen-select',
                     'multiple' => 'true',
-                    'data-placeholder' => 'Property', 
+                    'data-placeholder' => 'Property',
                     'value' => '0',
                 ],
                 'options' => [
@@ -229,10 +218,10 @@ class MainForm extends Form
                         'id' => 'bulk-metadata-editor-search-field',
                         'class' => 'chosen-select',
                         'multiple' => false,
-                        'data-placeholder' => 'Search for', 
+                        'data-placeholder' => 'Search for',
                     ],
                     'options' => [
-                        'label' => 'Original text: what you want to find and change', 
+                        'label' => 'Original text: what you want to find and change',
                     ],
         ]);
         $this->add([
@@ -242,12 +231,12 @@ class MainForm extends Form
                         'id' => 'bulk-metadata-editor-replace-field',
                         'class' => 'chosen-select',
                         'multiple' => false,
-                        'data-placeholder' => 'Replace with', 
+                        'data-placeholder' => 'Replace with',
                     ],
                     'options' => [
-                        'label' => 'Replacement text: what you want to to replace the original text', 
+                        'label' => 'Replacement text: what you want to to replace the original text',
                     ],
-        ]); 
+        ]);
         $this->add([//add checkbox info
                     'name' => 'regexp-field',
                     'type' => 'checkbox',
@@ -255,12 +244,12 @@ class MainForm extends Form
                         'id' => 'regexp-field',
                         'class' => 'chosen-select',
                         'multiple' => false,
-                        'data-placeholder' => 'Regular Expression', 
+                        'data-placeholder' => 'Regular Expression',
                     ],
                     'options' => [
-                        'label' => 'Use PHP regular expressions', 
+                        'label' => 'Use PHP regular expressions',
                     ],
-        ]); 
+        ]);
         $this->add([
                     'name' => 'bulk-metadata-editor-prepend-field',
                     'type' => 'text',
@@ -268,12 +257,12 @@ class MainForm extends Form
                         'id' => 'bulk-metadata-editor-prepend-field',
                         'class' => 'chosen-select',
                         'multiple' => false,
-                        'data-placeholder' => 'Text to add in front of text', 
+                        'data-placeholder' => 'Text to add in front of text',
                     ],
                     'options' => [
-                        'label' => 'Text to add before property', 
+                        'label' => 'Text to add before property',
                     ],
-        ]);  
+        ]);
         $this->add([
                     'name' => 'bulk-metadata-editor-append-field',
                     'type' => 'text',
@@ -281,12 +270,12 @@ class MainForm extends Form
                         'id' => 'bulk-metadata-editor-append-field',
                         'class' => 'chosen-select',
                         'multiple' => false,
-                        'data-placeholder' => 'Text to add after text', 
+                        'data-placeholder' => 'Text to add after text',
                     ],
                     'options' => [
-                        'label' => 'Text to add after after property', 
+                        'label' => 'Text to add after after property',
                     ],
-        ]); 
+        ]);
         $this->add([
                     'name' => 'bulk-metadata-editor-explode-field',
                     'type' => 'text',
@@ -294,12 +283,12 @@ class MainForm extends Form
                         'id' => 'bulk-metadata-editor-explode-field',
                         'class' => 'chosen-select',
                         'multiple' => false,
-                        'data-placeholder' => 'Delimiter (a character or phrase which separates fields)', 
+                        'data-placeholder' => 'Delimiter (a character or phrase which separates fields)',
                     ],
                     'options' => [
-                        'label' => 'Delimiter (separates fields)', 
+                        'label' => 'Delimiter (separates fields)',
                     ],
-        ]); 
+        ]);
 
         $this->add([
             'type' => 'Zend\Form\Element\Button',
@@ -338,7 +327,5 @@ class MainForm extends Form
                 'label' => 'Apply Edits Now',
             ],
         ]);
-
-
     }
 }

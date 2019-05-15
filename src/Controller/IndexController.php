@@ -2,16 +2,8 @@
 namespace MetadataEditor\Controller;
 
 use MetadataEditor\Form\MainForm;
-use finfo;
-use Omeka\Entity\Item;
-use Omeka\Api\Representation\ItemRepresentation;
 use Omeka\Api\Manager as ApiManager;
-use Omeka\Service\Exception\ConfigException;
 use Omeka\Settings\UserSettings;
-use Omeka\Stdlib\Message;
-use Omeka\Module\AbstractModule;
-use Omeka\Entity\Job;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
@@ -88,9 +80,9 @@ class IndexController extends AbstractActionController
         $view = new ViewModel;
         $params = $this->getMainParams();
         $foundItems = $this->getItems($params);
-        if($foundItems['count'] == 0){
+        if ($foundItems['count'] == 0) {
             $results = "No items selected. Please change your selections and try again.";
-        }else{
+        } else {
             $results = $foundItems;
         }
         $propertyNames = $this->getPropNames();
@@ -106,15 +98,15 @@ class IndexController extends AbstractActionController
         $params = $this->getMainParams();
         $foundItems = $this->getItems($params);
         $filteredItems = $this->fieldsFilter($params, $foundItems);
-        if($filteredItems['count'] == 0){
+        if ($filteredItems['count'] == 0) {
             $results = $filteredItems;
-        }else{
+        } else {
             $propertyInfo = $filteredItems['matchProperties'];
-            $results = array();
-            foreach($filteredItems as $item){
-                if(is_array($item)){
+            $results = [];
+            foreach ($filteredItems as $item) {
+                if (is_array($item)) {
                     $changedItem = $this->changeItem($params, $item, $propertyInfo);
-                    if( $changedItem !== $item){
+                    if ($changedItem !== $item) {
                         $item['newItem'] = $changedItem;
                         array_push($results, $item);
                     }
@@ -126,34 +118,34 @@ class IndexController extends AbstractActionController
         $response->setContent(\Zend\Json\Json::encode($results));
         return $response;
     }
-    
-    private function changeItem($params, $item, $propertyInfo){
-        if($params['changesRadio']){
+
+    private function changeItem($params, $item, $propertyInfo)
+    {
+        if ($params['changesRadio']) {
             $change = $params['changesRadio'];
-            $results = array();
-            if(is_array($item)){
-                if(array_key_exists('o:id', $item)){
+            $results = [];
+            if (is_array($item)) {
+                if (array_key_exists('o:id', $item)) {
                     $id = $item['o:id'];
-                    foreach ($propertyInfo as $info){
+                    foreach ($propertyInfo as $info) {
                         $term = $info['o:term'];
-                        if(array_key_exists ($term, $item)){
+                        if (array_key_exists($term, $item)) {
                             $properties = $item[$term];
-                            if($change == "deduplicate"){
-                               $item = $this->deduplicate($properties, $item, $term);
-                            }
-                            elseif($change == "replace"){
+                            if ($change == "deduplicate") {
+                                $item = $this->deduplicate($properties, $item, $term);
+                            } elseif ($change == "replace") {
                                 $search = $params['bulk-metadata-editor-search-field'];
                                 $regexp = $params['regexp-field'];
                                 $replace = $params['bulk-metadata-editor-replace-field'];
                                 $item = $this->replace($item, $term, $properties, $search, $replace, $regexp);
-                            }elseif($change == "append"){
+                            } elseif ($change == "append") {
                                 $append = $params['bulk-metadata-editor-append-field'];
                                 $item = $this->append($item, $term, $properties, $append);
-                            }elseif($change == "prepend"){
-                               $prepend = $params['bulk-metadata-editor-prepend-field'];
-                               $item = $this->prepend($item, $term, $properties, $prepend);
-                            }elseif($change == "explode"){
-                                if($params['bulk-metadata-editor-explode-field']) {
+                            } elseif ($change == "prepend") {
+                                $prepend = $params['bulk-metadata-editor-prepend-field'];
+                                $item = $this->prepend($item, $term, $properties, $prepend);
+                            } elseif ($change == "explode") {
+                                if ($params['bulk-metadata-editor-explode-field']) {
                                     $explode = $params['bulk-metadata-editor-explode-field'];
                                     $item = $this->explode($item, $term, $properties, $explode);
                                 }
@@ -173,13 +165,13 @@ class IndexController extends AbstractActionController
         $foundItems = $this->getItems($params);
         $filteredItems = $this->fieldsFilter($params, $foundItems);
 
-        if($filteredItems['count'] == 0){
+        if ($filteredItems['count'] == 0) {
             $results = $filteredItems;
-        }else{
+        } else {
             $propertyInfo = $filteredItems['matchProperties'];
-            $results = array();
-            foreach($filteredItems as $item){
-                if(is_array($item)){
+            $results = [];
+            foreach ($filteredItems as $item) {
+                if (is_array($item)) {
                     $changedItem = $this->changeItem($params, $item, $propertyInfo);
                     array_push($results, $changedItem);
                 }
@@ -200,44 +192,45 @@ class IndexController extends AbstractActionController
         $params = $this->getMainParams();
         $foundItems = $this->getItems($params);
         $filteredItems = $this->fieldsFilter($params, $foundItems);
-        if($filteredItems['count'] == 0){
+        if ($filteredItems['count'] == 0) {
             $results = $filteredItems;
-        }else{
+        } else {
             $propertyInfo = $filteredItems['matchProperties'];
-                $results = array();
-                foreach($filteredItems as $item){
-                    if(is_array($item)){
-                        $changedItem = $this->changeItem($params, $item, $propertyInfo);
-                        if(array_key_exists('o:id', $item)){
-                            $id = $item['o:id'];
-                            if($changedItem !== $item){
-                                $response = $this->api()->update('items', $id, $changedItem);
-                                array_push($results, $changedItem);
-                            }
+            $results = [];
+            foreach ($filteredItems as $item) {
+                if (is_array($item)) {
+                    $changedItem = $this->changeItem($params, $item, $propertyInfo);
+                    if (array_key_exists('o:id', $item)) {
+                        $id = $item['o:id'];
+                        if ($changedItem !== $item) {
+                            $response = $this->api()->update('items', $id, $changedItem);
+                            array_push($results, $changedItem);
                         }
                     }
                 }
-                $view->setVariable('properties', json_encode($propertyInfo));
-                $results['count'] = sizeOf($results);
+            }
+            $view->setVariable('properties', json_encode($propertyInfo));
+            $results['count'] = sizeOf($results);
         }
-        
+
         $view->setVariable('collection', json_encode($results));
         return $view;
     }
 
-    protected function getMainParams(){
-        $params = array();
+    protected function getMainParams()
+    {
+        $params = [];
         $request = $this->getRequest();
         if ($request->isPost()) {
             $out = $_REQUEST;
         } else {
             $out = "Connection error or no search results";
         }
-        $names = array('bmeCollectionId', 'item-select-meta', 'bulk-metadata-editor-element-id', 'bulk-metadata-editor-compare', 'bulk-metadata-editor-selector', 'selectFields', 'changesRadio', 'bulk-metadata-editor-search-field', 'bulk-metadata-editor-replace-field', 'regexp-field', 'bulk-metadata-editor-prepend-field', 'bulk-metadata-editor-append-field', 'bulk-metadata-editor-explode-field');
-        foreach($names as $paramName){
-            if(isset($out[$paramName])){
+        $names = ['bmeCollectionId', 'item-select-meta', 'bulk-metadata-editor-element-id', 'bulk-metadata-editor-compare', 'bulk-metadata-editor-selector', 'selectFields', 'changesRadio', 'bulk-metadata-editor-search-field', 'bulk-metadata-editor-replace-field', 'regexp-field', 'bulk-metadata-editor-prepend-field', 'bulk-metadata-editor-append-field', 'bulk-metadata-editor-explode-field'];
+        foreach ($names as $paramName) {
+            if (isset($out[$paramName])) {
                 $params[$paramName] = $out[$paramName];
-            }else{
+            } else {
                 $params[$paramName] = false;
             }
         }
@@ -245,31 +238,31 @@ class IndexController extends AbstractActionController
     }
 
     protected function getPropertyName($propertyId)
-    {   
-        $results = array();
-        if(is_array($propertyId)){
-            foreach($propertyId as $id){
-                $query = array(
-                    'id' => $id
-                );
-                $properties =  $this->apiSearch($query, 'properties');
-                foreach($properties as $property){
-                    $result = array();
-                    if($property['o:id'] == $id){
+    {
+        $results = [];
+        if (is_array($propertyId)) {
+            foreach ($propertyId as $id) {
+                $query = [
+                    'id' => $id,
+                ];
+                $properties = $this->apiSearch($query, 'properties');
+                foreach ($properties as $property) {
+                    $result = [];
+                    if ($property['o:id'] == $id) {
                         $result['o:label'] = $property['o:label'];
                         $result['o:term'] = $property['o:term'];
                         array_push($results, $result);
                     }
                 }
             }
-        }else{
-            $query = array(
-                'id' => $propertyId
-            );
-            $properties =  $this->apiSearch($query, 'properties');
-            foreach($properties as $property){
-                $result = array();
-                if($property['o:id'] == $propertyId){
+        } else {
+            $query = [
+                'id' => $propertyId,
+            ];
+            $properties = $this->apiSearch($query, 'properties');
+            foreach ($properties as $property) {
+                $result = [];
+                if ($property['o:id'] == $propertyId) {
                     $result['o:label'] = $property['o:label'];
                     $result['o:term'] = $property['o:term'];
                     array_push($results, $result);
@@ -281,28 +274,28 @@ class IndexController extends AbstractActionController
 
     private function getItems($params)
     {
-        if($params['bmeCollectionId']){
+        if ($params['bmeCollectionId']) {
             $itemset = $params['bmeCollectionId'];
             $useProperties = $params['item-select-meta'];
-            if ($useProperties){
+            if ($useProperties) {
                 $properties = $params['bulk-metadata-editor-element-id'];
                 $operator = $params['bulk-metadata-editor-compare'];
                 $find = $params['bulk-metadata-editor-selector'];
-                $foundItems = $this->getData($properties, $find, $operator, $itemset); 
-            }else{
+                $foundItems = $this->getData($properties, $find, $operator, $itemset);
+            } else {
                 $foundItems = $this->getData("", "", "", $itemset);
             }
             $foundItems['count'] = sizeOf($foundItems);
             $foundItems['alt'] = "";
-        }else{
-            $foundItems = array("count"=>0, "alt"=>"No item sets selected.");
+        } else {
+            $foundItems = ["count" => 0, "alt" => "No item sets selected."];
         }
         return $foundItems;
     }
 
     protected function getData($properties, $find, $operator, $itemset)
     {
-        $query = array();
+        $query = [];
         $query = $this->getQuery($find, $properties, $operator, $itemset);
         $out = $this->apiSearch($query, 'items');
         return $out;
@@ -310,7 +303,7 @@ class IndexController extends AbstractActionController
 
     private function getQuery($find, $properties, $operator, $itemset)
     {
-        $query = array();
+        $query = [];
         $properties = $this->addQueryProperty($find, $properties, $operator, "and");
         $query['item_set_id'] = $itemset;
         $query['property'] = $properties;
@@ -318,14 +311,14 @@ class IndexController extends AbstractActionController
     }
 
     private function addQueryProperty($find, $properties, $operator, $joiner)
-    {   
-        $properties = array();
-        $property = array(
+    {
+        $properties = [];
+        $property = [
             "text" => $find,
             "property" => $properties,
             "type" => $operator,
             "joiner" => $joiner,
-        );
+        ];
         array_push($properties, $property);
         return $properties;
     }
@@ -347,33 +340,33 @@ class IndexController extends AbstractActionController
 
     protected function propertyQuery($property, $find)
     {
-        $property = array(
+        $property = [
             "text" => $find,
             "property" => $property,
             "type" => "in",
-            "joiner" => "and"
-        );
+            "joiner" => "and",
+        ];
         $query['property'] = $property;
         $results = $this->apiSearch($query, 'items');
         return $results;
     }
 
     private function fieldsFilter($params, $foundItems)
-    {   
-        if($foundItems['count'] !== 0){
-            if($params['selectFields']){
+    {
+        if ($foundItems['count'] !== 0) {
+            if ($params['selectFields']) {
                 $fields = $params['selectFields'];
-            
+
                 $propertyInfo = $this->getPropertyName($fields);
-                $results = array();
-            
-                foreach ($propertyInfo as $prop){
+                $results = [];
+
+                foreach ($propertyInfo as $prop) {
                     $term = $prop['o:term'];
 
-                    foreach($foundItems as $item){
-                        if(is_array($item)){
-                            if(array_key_exists ($term, $item)){
-                                if (! in_array($item, $results)){
+                    foreach ($foundItems as $item) {
+                        if (is_array($item)) {
+                            if (array_key_exists($term, $item)) {
+                                if (! in_array($item, $results)) {
                                     array_push($results, $item);
                                 }
                             }
@@ -382,18 +375,19 @@ class IndexController extends AbstractActionController
                 }
                 $results['count'] = sizeOf($results);
                 $results['alt'] = "";
-                $results['matchProperties'] = $propertyInfo; 
-            }else{
-                $results = array("count"=>0, "alt"=>"No items selected.");
+                $results['matchProperties'] = $propertyInfo;
+            } else {
+                $results = ["count" => 0, "alt" => "No items selected."];
             }
             return $results;
         }
     }
 
-    private function getPropNames(){
+    private function getPropNames()
+    {
         $query['term'] = "";
         $properties = $this->apiSearch($query, 'properties');
-        $propertyNames = array();
+        $propertyNames = [];
         foreach ($properties as $property) {
             $propertyName = $property['o:term'];
             array_push($propertyNames, $propertyName);
@@ -403,38 +397,39 @@ class IndexController extends AbstractActionController
 
     private function deduplicate($properties, $item, $term)
     {
-        $values = array();
-        foreach($properties as $key=>$property){
-             $val = $property['@value'];                                     
-            if (trim($val) == ''){
-                 unset($properties[$key]);
-            }else{
-                if(!in_array($val, $values, true)){
+        $values = [];
+        foreach ($properties as $key => $property) {
+            $val = $property['@value'];
+            if (trim($val) == '') {
+                unset($properties[$key]);
+            } else {
+                if (!in_array($val, $values, true)) {
                     array_push($values, $val);
-                }else{
+                } else {
                     unset($item[$term][$key]);
                 }
-            }            
+            }
         }
         return $item;
     }
 
-    protected function replace($item, $term, $properties, $search, $replace, $regexp){
-        foreach($properties as $key=>$property){
-            if(array_key_exists('@value', $property)){
+    protected function replace($item, $term, $properties, $search, $replace, $regexp)
+    {
+        foreach ($properties as $key => $property) {
+            if (array_key_exists('@value', $property)) {
                 $value = $property['@value'];
-                if($regexp == 1){
-                    if(@preg_match($search, null) !== false){
+                if ($regexp == 1) {
+                    if (@preg_match($search, null) !== false) {
                         $newValue = preg_replace($search, $replace, $value);
-                    }else{
+                    } else {
                         $newValue = $value;
                     }
-                }else{
+                } else {
                     $newValue = str_replace($search, $replace, $value);
                 }
-                if(($newValue !== $value) && ($newValue !== '')){
-                    $item[$term][$key]['@value'] =  $newValue;
-                }elseif($newValue == ''){
+                if (($newValue !== $value) && ($newValue !== '')) {
+                    $item[$term][$key]['@value'] = $newValue;
+                } elseif ($newValue == '') {
                     unset($item[$term][$key]);
                 }
             }
@@ -442,50 +437,52 @@ class IndexController extends AbstractActionController
         return $item;
     }
 
-    protected function append($item, $term, $properties, $append){
-        foreach($properties as $key=>$property){ 
-            if(array_key_exists('@value', $property)){
+    protected function append($item, $term, $properties, $append)
+    {
+        foreach ($properties as $key => $property) {
+            if (array_key_exists('@value', $property)) {
                 $value = $property['@value'];
                 $newValue = $value . $append;
-                if(($newValue !== $value) && ($newValue !== '')){
-                    $item[$term][$key]['@value'] =  $newValue;
+                if (($newValue !== $value) && ($newValue !== '')) {
+                    $item[$term][$key]['@value'] = $newValue;
                 }
             }
         }
         return $item;
     }
 
-    protected function prepend($item, $term, $properties, $prepend){
-        foreach($properties as $key=>$property){
-            if(array_key_exists('@value', $property)){
+    protected function prepend($item, $term, $properties, $prepend)
+    {
+        foreach ($properties as $key => $property) {
+            if (array_key_exists('@value', $property)) {
                 $value = $property['@value'];
                 $newValue = $prepend . $value ;
-                if(($newValue !== $value) && ($newValue !== '')){
-                    $item[$term][$key]['@value'] =  $newValue;
+                if (($newValue !== $value) && ($newValue !== '')) {
+                    $item[$term][$key]['@value'] = $newValue;
                 }
             }
         }
         return $item;
     }
-    
-    protected function explode($item, $term, $properties, $explode){
-        foreach($properties as $key=>$property){
-            if(array_key_exists('@value', $property)){
+
+    protected function explode($item, $term, $properties, $explode)
+    {
+        foreach ($properties as $key => $property) {
+            if (array_key_exists('@value', $property)) {
                 $value = $property['@value'];
-                if($explode !== ''){
-                    if(strpos($value, $explode) !== false){
+                if ($explode !== '') {
+                    if (strpos($value, $explode) !== false) {
                         $newValueSet = explode($explode, $value);
                         $blank = $property;
-                        foreach($newValueSet as $i =>$newValue){
+                        foreach ($newValueSet as $i => $newValue) {
                             $blank['@value'] = $newValue;
-                            if($newValue !== ''){
+                            if ($newValue !== '') {
                                 array_push($item[$term], $blank);
                             }
                         }
                         unset($item[$term][$key]);
-                    }  
+                    }
                 }
-                
             }
         }
         return $item;

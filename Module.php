@@ -2,9 +2,6 @@
 namespace MetadataEditor;
 
 use Omeka\Module\AbstractModule;
-use Omeka\Entity\Job;
-use Zend\ModuleManager\ModuleManager;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 class Module extends AbstractModule
 {

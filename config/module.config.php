@@ -105,7 +105,7 @@ return [
             ],
         ],
     ],
-    
+
     'navigation' => [
         'AdminModule' => [
             [

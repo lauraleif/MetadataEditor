@@ -31,10 +31,6 @@ The following metadata edits are supported:
 
 Edits are only applied to the selected item sets and properties.
 
-All edits are permanent and cannot be undone.
-
-It is recommended to avoid huge updates. Consider batching updates by item set to improve performance.
-
 Troubleshooting
 ---------------
 
