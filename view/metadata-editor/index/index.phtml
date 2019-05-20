@@ -4,16 +4,11 @@ $escapeHtml = $this->plugin('escapeHtml');
 $this->headLink()->appendStylesheet($this->assetUrl('css/metadata-editor.css', 'MetadataEditor'));
 $this->headScript()->appendFile('https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js');
 $this->headScript()->appendFile($this->assetUrl('js/metadata-editor.js', 'MetadataEditor'));
-
-
-
 ?>
 
 <?php echo $this->pageTitle($this->translate('Edit Options'), 1, $this->translate('Metadata Editor')); ?>
-
 <?php echo $this->form()->openTag($form); ?>
 
-<!-- <?php echo $this->formCollection($form, false); ?> -->
 <fieldset class="bmeFieldset">
 <legend>Step 1: Select Items</legend>
 <?php echo $this->formLabel($form->get('bmeCollectionId')); ?>
@@ -28,8 +23,6 @@ $this->headScript()->appendFile($this->assetUrl('js/metadata-editor.js', 'Metada
 	<?php echo $this->formElement($form->get('bulk-metadata-editor-compare')); ?>
 	 <?php echo $this->formLabel($form->get('bulk-metadata-editor-selector')); ?> 
 	<?php echo $this->formElement($form->get('bulk-metadata-editor-selector')); ?>
-<!-- 	<?php echo $this->formLabel($form->get('bulk-metadata-editor-case')); ?>-->
-<!--	<?php echo $this->formElement($form->get('bulk-metadata-editor-case')); ?> -->
 </div>
 <div class="previewButtonDiv">
 <?php echo $this->formElement($form->get('preview-items-button')); ?>

@@ -4,9 +4,9 @@
 <h2>Updates</h2>
 
 <?php 
-//not really also indicators
+
 $collection = json_decode($collection, true);
-if($collection["count"] == '0'){
+if(($collection["count"] == '0') || (is_null($collection))){
 	echo "<p>No items were selected or updated.</p>";
 }else{
 	echo "<p>Your items have been updated.</p>";
@@ -15,7 +15,7 @@ if($collection["count"] == '0'){
 	$out = "";
 	foreach ($collection as $item){
 		if(is_array($item)){
-			// if ($resultCount > 0){
+
 				$title = $item["o:id"];
 				$out = $out . "<h3>Item No. " .  $title  . "</h3>";
 				$out = $out . "<table><tr><th>Property</th><th>Value</th></tr>";
@@ -33,7 +33,7 @@ if($collection["count"] == '0'){
 					}
 				$out = $out . "</table>";
 				}
-			// }
+
 		}
 	}
 	echo $out;

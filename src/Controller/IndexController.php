@@ -98,9 +98,9 @@ class IndexController extends AbstractActionController
         $params = $this->getMainParams();
         $foundItems = $this->getItems($params);
         $filteredItems = $this->fieldsFilter($params, $foundItems);
-        if ($filteredItems['count'] == 0) {
+        if (($filteredItems['count'] == 0)) {
             $results = $filteredItems;
-        } else {
+        }elseif(array_key_exists('matchProperties', $filteredItems) ){
             $propertyInfo = $filteredItems['matchProperties'];
             $results = [];
             foreach ($filteredItems as $item) {
@@ -112,8 +112,11 @@ class IndexController extends AbstractActionController
                     }
                 }
             }
+            $results['matchProperties'] = $propertyInfo;
         }
-        $results['matchProperties'] = $propertyInfo;
+        if (! is_array($results)){
+            $results = array('count' => 0);
+        }
         $response = $this->getResponse();
         $response->setContent(\Zend\Json\Json::encode($results));
         return $response;
@@ -399,14 +402,16 @@ class IndexController extends AbstractActionController
     {
         $values = [];
         foreach ($properties as $key => $property) {
-            $val = $property['@value'];
-            if (trim($val) == '') {
-                unset($properties[$key]);
-            } else {
-                if (!in_array($val, $values, true)) {
-                    array_push($values, $val);
+             if (array_key_exists('@value', $property) && ($property['type'] == 'literal')) {
+                $val = $property['@value'];
+                if (trim($val) == '') {
+                    unset($properties[$key]);
                 } else {
-                    unset($item[$term][$key]);
+                    if (!in_array($val, $values, true)) {
+                        array_push($values, $val);
+                    } else {
+                        unset($item[$term][$key]);
+                    }
                 }
             }
         }
@@ -416,7 +421,7 @@ class IndexController extends AbstractActionController
     protected function replace($item, $term, $properties, $search, $replace, $regexp)
     {
         foreach ($properties as $key => $property) {
-            if (array_key_exists('@value', $property)) {
+            if (array_key_exists('@value', $property) && ($property['type'] == 'literal')) {
                 $value = $property['@value'];
                 if ($regexp == 1) {
                     if (@preg_match($search, null) !== false) {
@@ -440,7 +445,7 @@ class IndexController extends AbstractActionController
     protected function append($item, $term, $properties, $append)
     {
         foreach ($properties as $key => $property) {
-            if (array_key_exists('@value', $property)) {
+            if (array_key_exists('@value', $property) && ($property['type'] == 'literal')) {
                 $value = $property['@value'];
                 $newValue = $value . $append;
                 if (($newValue !== $value) && ($newValue !== '')) {
@@ -454,7 +459,7 @@ class IndexController extends AbstractActionController
     protected function prepend($item, $term, $properties, $prepend)
     {
         foreach ($properties as $key => $property) {
-            if (array_key_exists('@value', $property)) {
+            if (array_key_exists('@value', $property) && ($property['type'] == 'literal')) {
                 $value = $property['@value'];
                 $newValue = $prepend . $value ;
                 if (($newValue !== $value) && ($newValue !== '')) {
@@ -468,7 +473,7 @@ class IndexController extends AbstractActionController
     protected function explode($item, $term, $properties, $explode)
     {
         foreach ($properties as $key => $property) {
-            if (array_key_exists('@value', $property)) {
+            if (array_key_exists('@value', $property) && ($property['type'] == 'literal')) {
                 $value = $property['@value'];
                 if ($explode !== '') {
                     if (strpos($value, $explode) !== false) {

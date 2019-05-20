@@ -19,14 +19,6 @@ jQuery(document).ready(function () {
         $('#fields-waiting').hide();
         $('#changes-waiting').hide();
 
-        // $('.bulk-metadata-editor-selector').keypress(function (event) {
-        //     var key = event.which;
-        //     // the enter key code
-        //     if (key == 13) {
-        //         event.preventDefault();
-        //     }
-        // });
-
         $("#item-select-meta").change(function () {
             if (this.checked) {
                 $('#item-meta').show();
@@ -262,7 +254,6 @@ jQuery(document).ready(function () {
                             out = out + "<tr><td>" + id + "</td><td>" + title + "</td><td>" + description + "</td><td>" + type + "</td></tr>";
                         }
                     })
-
                     var more = data['count'] - max;
                     var sentence = "";
                     if (more > 0){
@@ -390,7 +381,6 @@ jQuery(document).ready(function () {
                                         }
                                         out = out + "</tr>";
                             });
-                            
                         }
                     });
                     var more = count - max;
