@@ -19,7 +19,7 @@ It’s always recommended to backup your files and your databases and to check y
 Notes
 ---------------
 
-This module is adapted from the Omeka Classic plugin Bulk Metadata Editor but is not affiliated with that plugin. There are some differences in functionality, due to differences between Omeka S and Omeka Classic.
+This module is adapted from the Omeka Classic plugin Bulk Metadata Editor but is not affiliated with that plugin. There are some differences in functionality, due to differences between Omeka S and Omeka Classic. This module only edits literal or text property values. Properties with URI or Omeka resources instead of text values will not be edited.
 
 The following metadata edits are supported:
 - Search and replace text (replace a search phrase with different text for all of the selected items)
